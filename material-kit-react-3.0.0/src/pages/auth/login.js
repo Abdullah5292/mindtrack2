@@ -42,7 +42,8 @@ const Page = () => {
           password: values.password,
         });
 
-        localStorage.setItem("token", response.data.data.user, response.data.data.token); // Store token
+        localStorage.setItem("token", response.data.data.token); // Store token
+        handleSignIn(response.data.data.user, response.data.data.token);
         console.log("Redirecting to /"); // Check if this runs
         router.push("/");
       } catch (err) {
