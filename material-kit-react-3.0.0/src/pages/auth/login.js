@@ -83,7 +83,21 @@ const Page = () => {
           <div>
             <Stack spacing={1} sx={{ mb: 3 }}>
               <Typography variant="h4">Login</Typography>
+<<<<<<< HEAD
 
+=======
+              <Typography color="text.secondary" variant="body2">
+                Don&apos;t have an account? &nbsp;
+                <Link
+                  component={NextLink}
+                  href="/auth/register"
+                  underline="hover"
+                  variant="subtitle2"
+                >
+                  Register
+                </Link>
+              </Typography>
+>>>>>>> 5c96bd48320536a8e4972d18e5fdbd43834e1424
             </Stack>
             <Tabs onChange={handleMethodChange} sx={{ mb: 3 }} value={method}>
               <Tab label="Email" value="email" />
