@@ -34,37 +34,36 @@ export const indigo = withAlphas({
 });
 
 export const success = withAlphas({
-  lightest: '#F0FDF9',
-  light: '#3FC79A',
-  main: '#10B981',
-  dark: '#0B815A',
-  darkest: '#134E48',
-  contrastText: '#FFFFFF'
+  lightest: '#FFF1F2',
+  light: '#FFCDD2',
+  main: '#EF4444',
+  darkest: '#991B1B',
+  contrastText: 'FFFFFF'
 });
 
 export const info = withAlphas({
-  lightest: '#ECFDFF',
-  light: '#CFF9FE',
-  main: '#06AED4',
-  dark: '#0E7090',
-  darkest: '#164C63',
+  lightest: '#FDF2F8',
+  light: '#FBCFE8',
+  main: '#DB2777',
+  dark: '#BE185D',
+  darkest: '#831843',
   contrastText: '#FFFFFF'
 });
 
 export const warning = withAlphas({
-  lightest: '#FFFAEB',
-  light: '#FEF0C7',
-  main: '#F79009',
-  dark: '#B54708',
-  darkest: '#7A2E0E',
+  lightest: '#FFF5EB',
+  light: '#FED7AA',
+  main: '#F97316',
+  dark: '#EA580C',
+  darkest: '#9A3412',
   contrastText: '#FFFFFF'
 });
 
 export const error = withAlphas({
-  lightest: '#FEF3F2',
-  light: '#FEE4E2',
-  main: '#F04438',
-  dark: '#B42318',
-  darkest: '#7A271A',
+  lightest: '#FFF5F5',
+  light: '#FED7D7',
+  main: '#E53E3E',
+  dark: '#C53030',
+  darkest: '#9B2C2C',
   contrastText: '#FFFFFF'
 });
