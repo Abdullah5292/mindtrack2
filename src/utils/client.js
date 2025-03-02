@@ -29,3 +29,16 @@ export const getRoles = async () => {
   if (response.data?.status) return response.data.data;
   return false;
 };
+
+export const getPermissions = async () => {
+  const response = await authenticatedAxios.get("/roles/permissions");
+  if (response.data?.status) return response.data.data;
+  return false;
+};
+
+export const getInstitutionTypes = async () => {
+  const response = await authenticatedAxios.get("/institutions/types");
+  if (response.data?.status) return response.data.data;
+  return false;
+};
+

@@ -104,10 +104,14 @@ const Page = (props) => {
                         <DataForm
                           title="Add User"
                           onSubmit={async (v) => {
-                            const res = await authenticatedAxios.post("/users/", v);
-                            if (res.data.status) {
-                              await getData();
-                              props.closeDrawer();
+                            try {
+                              const res = await authenticatedAxios.post("/users/", v);
+                              if (res.data.status) {
+                                await getData();
+                                props.closeDrawer();
+                              }
+                            } catch (e) {
+                              console.error(e);
                             }
                           }}
                           institutions={institutions}
@@ -142,7 +146,8 @@ const Page = (props) => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell align="left">Name</TableCell>
+                        <TableCell align="left">ID</TableCell>
+                        <TableCell>Name</TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>Institution</TableCell>
                         <TableCell>Role</TableCell>
@@ -155,6 +160,7 @@ const Page = (props) => {
                         data.map((user) => {
                           return (
                             <TableRow hover key={user.id}>
+                              <TableCell align="left">{user.id}</TableCell>
                               <TableCell>
                                 <Stack alignItems="center" direction="row" spacing={2}>
                                   <Avatar src={user?.avatar}>{getInitials(user.name)}</Avatar>
@@ -176,13 +182,17 @@ const Page = (props) => {
                                           <DataForm
                                             title="Edit User"
                                             onSubmit={async (v) => {
-                                              const res = await authenticatedAxios.put(
-                                                "/users/",
-                                                v
-                                              );
-                                              if (res.data.status) {
-                                                await getData();
-                                                props.closeDrawer();
+                                              try {
+                                                const res = await authenticatedAxios.put(
+                                                  "/users/",
+                                                  v
+                                                );
+                                                if (res.data.status) {
+                                                  await getData();
+                                                  props.closeDrawer();
+                                                }
+                                              } catch (e) {
+                                                console.error(e);
                                               }
                                             }}
                                             initialValues={user}
@@ -201,15 +211,19 @@ const Page = (props) => {
                                       props.openModal({
                                         showSubmit: true,
                                         showCancel: true,
-                                        onSubmit: async () => {
-                                          const res = await authenticatedAxios.delete("/users/", {
-                                            data: { user_id: user.id },
-                                          });
-                                          if (res.data.status) {
-                                            await getData();
-                                            props.closeModal();
+                                        onSubmi: async () => {
+                                          try {
+                                            const res = await authenticatedAxios.delete("/users/", {
+                                              data: { user_id: user.id },
+                                            });
+                                            if (res.data.status) {
+                                              await getData();
+                                              props.closeModal();
+                                            }
+                                          } catch (e) {
+                                            console.error(e);
                                           }
-                                    },
+                                        },
                                       });
                                     }}
                                   >

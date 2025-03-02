@@ -28,6 +28,33 @@ export const items = [
     ),
   },
   {
+    title: "Roles",
+    path: "/roles",
+    icon: (
+      <SvgIcon fontSize="small">
+        <LockClosedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Institutions",
+    path: "/institutions",
+    icon: (
+      <SvgIcon fontSize="small">
+        <LockClosedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Games",
+    path: "/games",
+    icon: (
+      <SvgIcon fontSize="small">
+        <LockClosedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
     title: "Companies",
     path: "/companies",
     icon: (
@@ -51,24 +78,6 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <CogIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Login",
-    path: "/login",
-    icon: (
-      <SvgIcon fontSize="small">
-        <LockClosedIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Error",
-    path: "/404",
-    icon: (
-      <SvgIcon fontSize="small">
-        <XCircleIcon />
       </SvgIcon>
     ),
   },

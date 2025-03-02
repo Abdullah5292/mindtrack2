@@ -25,6 +25,7 @@
     "@mui/x-date-pickers": "5.0.19",
     "@reduxjs/toolkit": "^2.6.0",
     "apexcharts": "3.37.0",
+    "aws-sdk": "^2.1692.0",
     "date-fns": "2.29.3",
     "formik": "2.2.9",
     "jwt-decode": "^4.0.0",
