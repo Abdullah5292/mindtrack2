@@ -7,12 +7,20 @@ const baseConfig = {
   baseURL: process.env.BACKEND || "http://localhost:3001/admin",
 };
 
-const onResponse = (response) => {
+const onResponseSuccess = (response) => {
   if (String(response.config.method).toUpperCase() !== "GET") {
     if (response.data.status) NotificationManager.success(response.data.message);
     else NotificationManager.error(response.data.message);
   }
-  return response
+  return response;
+};
+
+const onResponseError = (response) => {
+  if (String(response.config.method).toUpperCase() !== "GET") {
+    if (response.response.data.status !== undefined) NotificationManager.error(response.response.data.message);
+    else NotificationManager.error("Something went wrong");
+  }
+  return response;
 };
 
 export const unauthenticatedAxios = axios.create(baseConfig);
@@ -27,5 +35,5 @@ authenticatedAxios.interceptors.request.use((config) => {
   return config;
 });
 
-unauthenticatedAxios.interceptors.response.use(onResponse)
-authenticatedAxios.interceptors.response.use(onResponse)
+unauthenticatedAxios.interceptors.response.use(onResponseSuccess, onResponseError);
+authenticatedAxios.interceptors.response.use(onResponseSuccess, onResponseError);

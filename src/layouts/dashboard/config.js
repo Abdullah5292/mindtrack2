@@ -30,8 +30,35 @@ export const items = [
     ),
   },
   {
+    title: "Roles",
+    path: "/roles",
+    icon: (
+      <SvgIcon fontSize="small">
+        <LockClosedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
     title: "Institutions",
     path: "/institutions",
+    icon: (
+      <SvgIcon fontSize="small">
+        <LockClosedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Games",
+    path: "/games",
+    icon: (
+      <SvgIcon fontSize="small">
+        <LockClosedIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Companies",
+    path: "/companies",
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <BuildingLibraryIcon />
@@ -71,15 +98,6 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <CogIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Logout",
-    path: "/logout",
-    icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
-        <ArrowLeftOnRectangleIcon />
       </SvgIcon>
     ),
   },

@@ -118,10 +118,14 @@ const Page = (props) => {
                         <DataForm
                           title="Add User"
                           onSubmit={async (v) => {
-                            const res = await authenticatedAxios.post("/users/", v);
-                            if (res.data.status) {
-                              await getData();
-                              props.closeDrawer();
+                            try {
+                              const res = await authenticatedAxios.post("/users/", v);
+                              if (res.data.status) {
+                                await getData();
+                                props.closeDrawer();
+                              }
+                            } catch (e) {
+                              console.error(e);
                             }
                           }}
                           institutions={institutions}
