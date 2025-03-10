@@ -58,6 +58,6 @@ export const AccountProfileDetails = () => {
   );
 
   return (
-   
-  );
+    <div>
+    </div>);
 };

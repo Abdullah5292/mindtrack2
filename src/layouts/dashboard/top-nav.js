@@ -31,7 +31,7 @@ export const TopNav = (props) => {
         component="header"
         sx={{
           backdropFilter: 'blur(6px)',
-          backgroundColor: (theme) => alpha(theme.palette.background.default, 0.8),
+          backgroundColor: (theme) => alpha(theme.palette.background.default, 0),
           position: 'sticky',
           left: {
             lg: `${SIDE_NAV_WIDTH}px`
@@ -60,18 +60,12 @@ export const TopNav = (props) => {
           >
             {!lgUp && (
               <IconButton onClick={onNavOpen}>
-                <SvgIcon fontSize="small">
+                <SvgIcon fontSize="small" sx={{ color: 'common.white' }}>
                   <Bars3Icon />
                 </SvgIcon>
               </IconButton>
             )}
-            <Tooltip title="Search">
-              <IconButton>
-                <SvgIcon fontSize="small">
-                  <MagnifyingGlassIcon />
-                </SvgIcon>
-              </IconButton>
-            </Tooltip>
+
           </Stack>
           <Stack
             alignItems="center"
@@ -80,7 +74,7 @@ export const TopNav = (props) => {
           >
             <Tooltip title="Contacts">
               <IconButton>
-                <SvgIcon fontSize="small">
+                <SvgIcon fontSize="small" sx={{ color: 'common.white' }}>
                   <UsersIcon />
                 </SvgIcon>
               </IconButton>
@@ -92,7 +86,7 @@ export const TopNav = (props) => {
                   color="success"
                   variant="dot"
                 >
-                  <SvgIcon fontSize="small">
+                  <SvgIcon fontSize="small" sx={{ color: 'common.white' }}>
                     <BellIcon />
                   </SvgIcon>
                 </Badge>

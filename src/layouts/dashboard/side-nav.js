@@ -24,7 +24,7 @@ export const SideNav = (props) => {
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
 
   const content = (
-    <Scrollbar
+    <Scrollbar // this is the scrollbar for the side nav
       sx={{
         height: '100%',
         '& .simplebar-content': {
@@ -35,7 +35,7 @@ export const SideNav = (props) => {
         }
       }}
     >
-      <Box
+      <Box // this is the box for the side nav container
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -43,7 +43,7 @@ export const SideNav = (props) => {
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Box
+          <Box // this is the box for the side nav logo
             component={NextLink}
             href="/"
             sx={{
@@ -52,44 +52,14 @@ export const SideNav = (props) => {
               width: 32
             }}
           >
-            <Logo />
-          </Box>
-          <Box
-            sx={{
-              alignItems: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 1,
-              cursor: 'pointer',
-              display: 'flex',
-              justifyContent: 'space-between',
-              mt: 2,
-              p: '12px'
-            }}
-          >
-            <div>
-              <Typography
-                color="inherit"
-                variant="subtitle1"
-              >
-                MindTrack
-              </Typography>
-              <Typography
-                color="neutral.400"
-                variant="body2"
-              >
 
-              </Typography>
-            </div>
-            <SvgIcon
-              fontSize="small"
-              sx={{ color: 'neutral.500' }}
-            >
-
-            </SvgIcon>
           </Box>
+
+
+
         </Box>
-        <Divider sx={{ borderColor: 'neutral.700' }} />
-        <Box
+        <Divider sx={{ display: 'none' }} />
+        <Box // this is the box for the side nav items
           component="nav"
           sx={{
             flexGrow: 1,
@@ -97,9 +67,9 @@ export const SideNav = (props) => {
             py: 3
           }}
         >
-          <Stack
+          <Stack // this is the stack for the side nav items
             component="ul"
-            spacing={0.5}
+            spacing={2.75} // 22px spacing
             sx={{
               listStyle: 'none',
               p: 0,
@@ -123,46 +93,53 @@ export const SideNav = (props) => {
             })}
           </Stack>
         </Box>
-        <Divider sx={{ borderColor: 'neutral.700' }} />
+        <Divider sx={{ display: 'none' }} />
 
       </Box>
-    </Scrollbar>
+    </Scrollbar >
   );
 
   if (lgUp) {
     return (
-      <Drawer
+      <Drawer // this handles the side nav for large screens
         anchor="left"
         open
         PaperProps={{
           sx: {
-            backgroundColor: 'neutral.800',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)', // Black with 70% opacity
             color: 'common.white',
-            width: 280
+            width: 280,
+            border: 'none', // Remove border
+            boxShadow: 'none' // Remove shadow if any
           }
         }}
         variant="permanent"
       >
+
         {content}
       </Drawer>
     );
   }
 
   return (
-    <Drawer
+    <Drawer // this handles the side nav for small screens
       anchor="left"
       onClose={onClose}
       open={open}
       PaperProps={{
         sx: {
-          backgroundColor: 'neutral.800',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)', // Black with 70% opacity
           color: 'common.white',
-          width: 280
+          width: 280,
+          border: 'none', // Remove border
+          boxShadow: 'none' // Remove shadow if any
         }
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}
       variant="temporary"
     >
+
+
       {content}
     </Drawer>
   );

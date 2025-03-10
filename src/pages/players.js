@@ -1,67 +1,58 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Head from 'next/head';
-import { Box, Button, Container, Stack, SvgIcon, Typography } from '@mui/material';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { useSelection } from 'src/hooks/use-selection';
-import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
-import { applyPagination } from 'src/utils/apply-pagination';
+import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
+import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import { IconButton } from "@mui/material";
+import { VisibilityOff } from "@mui/icons-material";
 
-const useCustomers = (page, rowsPerPage) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+import {
+  Avatar,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Container,
+  Divider,
+  FormControl,
+  Unstable_Grid2 as Grid,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack,
+  SvgIcon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TextField,
+  Typography,
 
-  useEffect(() => {
-    const fetchPlayers = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
-        }
+} from "@mui/material";
+import { useFormik } from "formik";
+import { Fullscreen } from "lucide-react";
+import moment from "moment";
+import Head from "next/head";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+import { Scrollbar } from "src/components/scrollbar";
+import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
+import { authenticatedAxios } from "src/utils/axios";
+import { getInstitutions, getRoles, getUsers } from "src/utils/client";
+import { getInitials } from "src/utils/get-initials";
+import WithDrawer from "src/utils/with-drawer";
+import WithModal from "src/utils/with-modal";
 
-        const response = await fetch('http://localhost:3000/admin/users', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const result = await response.json();
-        console.log('API Response:', result); // Debugging
-
-        if (!Array.isArray(result.data.roles)) {
-          throw new Error('Expected an array at result.data.roles');
-        }
-
-        setData(result.data.roles);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-        setData([]); // Avoids breaking UI
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlayers();
-  }, []);
-
-  return useMemo(() => applyPagination(data, page, rowsPerPage), [data, page, rowsPerPage]);
-};
-
-const useCustomerIds = (customers) => {
-  return useMemo(() => customers.map((customer) => customer.id), [customers]);
-};
-
-const Page = () => {
+const Page = (props) => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const customers = useCustomers(page, rowsPerPage);
-  const customersIds = useCustomerIds(customers);
-  const customersSelection = useSelection(customersIds);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [data, setData] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [institutions, setInstitutions] = useState([]);
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
@@ -71,53 +62,359 @@ const Page = () => {
     setRowsPerPage(event.target.value);
   }, []);
 
+  const getData = async () => {
+    const res = await getUsers();
+    if (res) setData(res);
+
+    const roleRes = await getRoles();
+    if (roleRes) setRoles(roleRes);
+
+    const instRes = await getInstitutions();
+    if (instRes) setInstitutions(instRes);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
-    <>
-      <Head>
-        <title>Players | Mindtrack</title>
-      </Head>
-      <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
+
+    <div className="flex flex-col w-full h-full relative">
+
+      <Image
+        src="/assets/Background.svg"
+        alt="Background"
+        layout="fill" // Makes it cover the full parent div
+        objectFit="cover" // Ensures it scales properly
+        priority // Loads the image faster
+      />
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 8,
+        }}
+      >
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Players</Typography>
-                <Stack alignItems="center" direction="row" spacing={1}>
-                  <Button color="inherit" startIcon={<SvgIcon fontSize="small"><ArrowUpOnSquareIcon /></SvgIcon>}>
-                    Import
-                  </Button>
-                  <Button color="inherit" startIcon={<SvgIcon fontSize="small"><ArrowDownOnSquareIcon /></SvgIcon>}>
-                    Export
-                  </Button>
-                </Stack>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Users</Typography>
               </Stack>
               <div>
-                <Button startIcon={<SvgIcon fontSize="small"><PlusIcon /></SvgIcon>} variant="contained">
-                  Add
+                <Button
+                  startIcon={
+                    <SvgIcon fontSize="small">
+                      <PlusIcon />
+                    </SvgIcon>
+                  }
+                  variant="contained"
+                  sx={{ backgroundColor: '#24A374' }}
+                  onClick={() => {
+                    props.openDrawer({
+                      width: "30vw",
+                      body: (
+                        <DataForm
+                          title="Add User"
+                          onSubmit={async (v) => {
+                            const res = await authenticatedAxios.post("/users/", v);
+                            if (res.data.status) {
+                              await getData();
+                              props.closeDrawer();
+                            }
+                          }}
+                          institutions={institutions}
+                          roles={roles}
+                        />
+                      ),
+                    });
+                  }}
+                >
+                  Add User
                 </Button>
+
               </div>
             </Stack>
-            <CustomersSearch />
-            <CustomersTable
-              count={customers.length}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
-            />
+            <Card sx={{ p: 2, backgroundColor: 'white' }}>
+              <OutlinedInput
+                defaultValue=""
+                fullWidth
+                placeholder="Search Users"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SvgIcon color="action" fontSize="small">
+                      <MagnifyingGlassIcon />
+                    </SvgIcon>
+                  </InputAdornment>
+                }
+                sx={{
+                  maxWidth: 500,
+                  backgroundColor: 'white',
+                  color: 'black',
+                  '& input': {
+                    color: 'none',
+                  },
+                  '&::placeholder': {
+                    color: 'black',
+                    opacity: 1,
+                  },
+                  '&:hover': {
+                    backgroundColor: 'white',
+                  },
+                  '& fieldset': {
+                    border: 'none !important', // Completely removes border
+                  },
+                  '&:hover fieldset': {
+                    border: 'none !important',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'white !important', // Keeps background white when focused
+                  },
+                  '&.Mui-focused fieldset': {
+                    border: 'none !important', // No border even when focused
+                  },
+                }}
+              />
+            </Card>
+
+            <Card>
+              <Scrollbar>
+                <Box sx={{ minWidth: 800 }}>
+                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
+                    <TableHead >
+                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }} align="left">Name</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Email</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Institution</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Role</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Created At</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {Array.isArray(data) &&
+                        data.map((user) => (
+                          <TableRow key={user.id} sx={{ backgroundColor: "transparent", borderBottom: "none" }}>
+                            <TableCell sx={{ color: "white" }}>
+                              <Stack alignItems="center" direction="row" spacing={2}>
+                                <Avatar src={user?.avatar}>{getInitials(user.name)}</Avatar>
+                                <Typography variant="subtitle2" sx={{ color: "white" }}>
+                                  {user.name}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell sx={{ color: "white" }}>{user.email}</TableCell>
+                            <TableCell sx={{ color: "white" }}>{user.institution.name}</TableCell>
+                            <TableCell sx={{ color: "white" }}>{user.role.name}</TableCell>
+                            <TableCell sx={{ color: "white" }}>{moment(user.createdAt).toLocaleString()}</TableCell>
+                            <TableCell>
+                              <ButtonGroup variant="contained">
+                                <Button
+                                  color="warning"
+                                  onClick={() => {
+                                    props.openDrawer({
+                                      width: "30vw",
+                                      body: (
+                                        <DataForm
+                                          title="Edit User"
+                                          onSubmit={async (v) => {
+                                            const res = await authenticatedAxios.put("/users/", v);
+                                            if (res.data.status) {
+                                              await getData();
+                                              props.closeDrawer();
+                                            }
+                                          }}
+                                          initialValues={user}
+                                          institutions={institutions}
+                                          roles={roles}
+                                        />
+                                      ),
+                                    });
+                                  }}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  color="error"
+                                  onClick={() => {
+                                    props.openModal({
+                                      showSubmit: true,
+                                      showCancel: true,
+                                      onSubmit: async () => {
+                                        const res = await authenticatedAxios.delete("/users/", {
+                                          data: { user_id: user.id },
+                                        });
+                                        if (res.data.status) {
+                                          await getData();
+                                          props.closeModal();
+                                        }
+                                      },
+                                    });
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </ButtonGroup>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+
+              </Scrollbar>
+              <TablePagination
+                component="div"
+                count={data.length}
+                sx={{ borderTop: "none", backgroundColor: "transparent", color: "white" }}
+                // onPageChange={onPageChange}
+                // onRowsPerPageChange={onRowsPerPageChange}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[5, 10, 25]}
+              />
+            </Card>
           </Stack>
         </Container>
-      </Box>
-    </>
+      </Box >
+    </div >
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+const ModalWrapped = WithModal(Page);
+const DrawerWrapped = WithDrawer(ModalWrapped);
+DrawerWrapped.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default Page;
+export default DrawerWrapped;
+const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles = [] }) => {
+  const formik = useFormik({
+    initialValues: {
+      id: initialValues?.id || 0,
+      email: initialValues?.email || "",
+      name: initialValues?.name || "",
+      password: initialValues?.password || "",
+      institutionId: initialValues?.institutionId || 0,
+      roleId: initialValues?.roleId || 0,
+    },
+    onSubmit,
+  });
+
+  return (
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        py: 8,
+        px: 1, // Padding for spacing
+        backgroundColor: "#FAEAF0", // Keep background for main section
+        boxShadow: "none", // No shadow
+        border: "none", // No border
+      }}
+    >
+      <Container maxWidth="xl">
+        <Stack spacing={3}>
+          <div>
+            <Typography variant="h4" sx={{ color: "#601631" }}>
+              {formTitle}
+            </Typography>
+          </div>
+          <div>
+            <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
+              {/* Removed Card and its content */}
+              <div>
+                <CardHeader
+                  subheader="The information can be edited"
+                  title="User Data"
+                  sx={{ color: "#601631" }} // Text color
+                />
+                <CardContent sx={{ pt: 0 }}>
+                  <Box sx={{ m: -1.5 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          label="Name"
+                          name="name"
+                          onChange={formik.handleChange}
+                          required
+                          value={formik.values.name}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          label="Email Address"
+                          name="email"
+                          onChange={formik.handleChange}
+                          required
+                          value={formik.values.email}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          label="Password"
+                          name="password"
+                          type="password"
+                          onChange={formik.handleChange}
+                          required
+                          value={formik.values.password}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormControl fullWidth>
+                          <InputLabel id="label-institution">Institution</InputLabel>
+                          <Select
+                            fullWidth
+                            labelId="label-institution"
+                            label="Select Institution"
+                            name="institutionId"
+                            onChange={formik.handleChange}
+                            required
+                            value={formik.values.institutionId}
+                          >
+                            {institutions.map((option) => (
+                              <MenuItem key={option.value} value={option.id}>
+                                {option.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormControl fullWidth>
+                          <InputLabel id="label-role">Role</InputLabel>
+                          <Select
+                            fullWidth
+                            labelId="label-role"
+                            label="Select Role"
+                            name="roleId"
+                            onChange={formik.handleChange}
+                            required
+                            value={formik.values.roleId}
+                          >
+                            {roles.map((option) => (
+                              <MenuItem key={option.value} value={option.id}>
+                                {option.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </CardContent>
+                <CardActions sx={{ justifyContent: "center" }}>
+                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
+                    Save details
+                  </Button>
+                </CardActions>
+              </div>
+            </form>
+          </div>
+        </Stack>
+      </Container>
+    </Box>
+  );
+};

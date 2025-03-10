@@ -3,6 +3,8 @@ import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIc
 import ClockIcon from '@heroicons/react/24/solid/ClockIcon';
 import { Avatar, Box, Card, CardContent, Divider, Stack, SvgIcon, Typography } from '@mui/material';
 
+
+
 export const CompanyCard = (props) => {
   const { company } = props;
 
@@ -11,7 +13,9 @@ export const CompanyCard = (props) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%'
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent black background
+        color: 'white', // White text
       }}
     >
       <CardContent>
@@ -31,64 +35,19 @@ export const CompanyCard = (props) => {
           align="center"
           gutterBottom
           variant="h5"
+          sx={{ color: 'white' }} // Ensure white text
         >
           {company.title}
         </Typography>
         <Typography
           align="center"
           variant="body1"
+          sx={{ color: 'white' }} // Ensure white text
         >
           {company.description}
         </Typography>
       </CardContent>
       <Box sx={{ flexGrow: 1 }} />
-      <Divider />
-      <Stack
-        alignItems="center"
-        direction="row"
-        justifyContent="space-between"
-        spacing={2}
-        sx={{ p: 2 }}
-      >
-        <Stack
-          alignItems="center"
-          direction="row"
-          spacing={1}
-        >
-          <SvgIcon
-            color="action"
-            fontSize="small"
-          >
-            <ClockIcon />
-          </SvgIcon>
-          <Typography
-            color="text.secondary"
-            display="inline"
-            variant="body2"
-          >
-            Updated 2hr ago
-          </Typography>
-        </Stack>
-        <Stack
-          alignItems="center"
-          direction="row"
-          spacing={1}
-        >
-          <SvgIcon
-            color="action"
-            fontSize="small"
-          >
-            <ArrowDownOnSquareIcon />
-          </SvgIcon>
-          <Typography
-            color="text.secondary"
-            display="inline"
-            variant="body2"
-          >
-            {company.downloads} Downloads
-          </Typography>
-        </Stack>
-      </Stack>
     </Card>
   );
 };

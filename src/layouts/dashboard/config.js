@@ -1,19 +1,21 @@
 import ChartBarIcon from "@heroicons/react/24/solid/ChartBarIcon";
-import CogIcon from "@heroicons/react/24/solid/CogIcon";
-import LockClosedIcon from "@heroicons/react/24/solid/LockClosedIcon";
-import ShoppingBagIcon from "@heroicons/react/24/solid/ShoppingBagIcon";
-import UserIcon from "@heroicons/react/24/solid/UserIcon";
-import UserPlusIcon from "@heroicons/react/24/solid/UserPlusIcon";
 import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
-import XCircleIcon from "@heroicons/react/24/solid/XCircleIcon";
+import BuildingLibraryIcon from "@heroicons/react/24/solid/BuildingLibraryIcon";
+import PuzzlePieceIcon from "@heroicons/react/24/solid/PuzzlePieceIcon";
+import UserGroupIcon from "@heroicons/react/24/solid/UserGroupIcon";
+import UserCircleIcon from "@heroicons/react/24/solid/UserCircleIcon";
+import CogIcon from "@heroicons/react/24/solid/CogIcon";
+import ArrowLeftOnRectangleIcon from "@heroicons/react/24/solid/ArrowLeftOnRectangleIcon";
 import { SvgIcon } from "@mui/material";
+
+const iconColor = "#F3C9D8"; // Default color
 
 export const items = [
   {
     title: "Overview",
     path: "/",
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <ChartBarIcon />
       </SvgIcon>
     ),
@@ -22,26 +24,44 @@ export const items = [
     title: "Users",
     path: "/users",
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <UsersIcon />
       </SvgIcon>
     ),
   },
   {
-    title: "Companies",
-    path: "/companies",
+    title: "Institutions",
+    path: "/institutions",
     icon: (
-      <SvgIcon fontSize="small">
-        <ShoppingBagIcon />
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+        <BuildingLibraryIcon />
       </SvgIcon>
     ),
   },
   {
-    title: "Account",
-    path: "/account",
+    title: "Games",
+    path: "/games",
     icon: (
-      <SvgIcon fontSize="small">
-        <UserIcon />
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+        <PuzzlePieceIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Roles",
+    path: "/roles",
+    icon: (
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+        <UserGroupIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Players",
+    path: "/players",
+    icon: (
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+        <UserCircleIcon />
       </SvgIcon>
     ),
   },
@@ -49,26 +69,17 @@ export const items = [
     title: "Settings",
     path: "/settings",
     icon: (
-      <SvgIcon fontSize="small">
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <CogIcon />
       </SvgIcon>
     ),
   },
   {
-    title: "Login",
-    path: "/login",
+    title: "Logout",
+    path: "/logout",
     icon: (
-      <SvgIcon fontSize="small">
-        <LockClosedIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Error",
-    path: "/404",
-    icon: (
-      <SvgIcon fontSize="small">
-        <XCircleIcon />
+      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+        <ArrowLeftOnRectangleIcon />
       </SvgIcon>
     ),
   },
