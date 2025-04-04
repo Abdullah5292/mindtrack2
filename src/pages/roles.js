@@ -74,7 +74,7 @@ const Page = (props) => {
   return (
     <>
       <Head>
-        <title>Roles | Devias Kit</title>
+        <title>Mindtrack | Roles</title>
       </Head>
       <Box
         component="main"
@@ -87,7 +87,7 @@ const Page = (props) => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Roles</Typography>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Roles</Typography>
               </Stack>
               <div>
                 <Button
@@ -97,6 +97,11 @@ const Page = (props) => {
                     </SvgIcon>
                   }
                   variant="contained"
+                  sx={{
+                    backgroundColor: "#24A374",
+                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
+                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
+                  }}
                   onClick={() => {
                     props.openDrawer({
                       width: "30vw",
@@ -120,15 +125,15 @@ const Page = (props) => {
                     });
                   }}
                 >
-                  Add
+                  Add Role
                 </Button>
               </div>
             </Stack>
-            <Card sx={{ p: 2 }}>
+            <Card sx={{ p: 2, backgroundColor: 'white' }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search"
+                placeholder="Search Roles"
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -136,15 +141,42 @@ const Page = (props) => {
                     </SvgIcon>
                   </InputAdornment>
                 }
-                sx={{ maxWidth: 500 }}
+                sx={{
+                  maxWidth: 500,
+                  backgroundColor: 'white',
+                  color: 'black',
+                  '& input': {
+                    color: 'none',
+                  },
+                  '&::placeholder': {
+                    color: 'black',
+                    opacity: 1,
+                  },
+                  '&:hover': {
+                    backgroundColor: 'white',
+                  },
+                  '& fieldset': {
+                    border: 'none !important', // Completely removes border
+                  },
+                  '&:hover fieldset': {
+                    border: 'none !important',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'white !important', // Keeps background white when focused
+                  },
+                  '&.Mui-focused fieldset': {
+                    border: 'none !important', // No border even when focused
+                  },
+                }}
               />
             </Card>
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
+
+                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
+                    <TableHead >
+                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
                         <TableCell align="left">ID</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Permission Count</TableCell>
@@ -158,20 +190,21 @@ const Page = (props) => {
                         data.map((role) => {
                           return (
                             <TableRow hover key={role.id}>
-                              <TableCell align="left">{role.id}</TableCell>
-                              <TableCell>{role.name}</TableCell>
-                              <TableCell>{role.RolePermissions?.length || 0}</TableCell>
-                              <TableCell>
+                              <TableCell sx={{ color: "white" }} >{role.id}</TableCell>
+                              <TableCell sx={{ color: "white" }} >{role.name}</TableCell>
+                              <TableCell sx={{ color: "white" }} >{role.RolePermissions?.length || 0}</TableCell>
+                              <TableCell sx={{ color: "white" }} >
                                 <Stack direction="row" spacing={1}>
                                   {Array.isArray(role.Admins) && role.Admins.length > 0
-                                    ? role.Admins.map((a) => (
-                                      <Chip label={a.name} color="primary" />
+                                    ? role.Admins.map((admin) => (
+                                      <Chip key={admin.id} label={admin.name} color="primary" /> // ✅ Best practice: Unique `id`
                                     ))
                                     : "-"}
                                 </Stack>
+
                               </TableCell>
 
-                              <TableCell>{moment(role.createdAt).toLocaleString()}</TableCell>
+                              <TableCell sx={{ color: "white" }} >{moment(role.createdAt).toLocaleString()}</TableCell>
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
@@ -241,6 +274,7 @@ const Page = (props) => {
               <TablePagination
                 component="div"
                 count={data.length}
+                sx={{ borderTop: "none", backgroundColor: "transparent", color: "white" }}
                 // onPageChange={onPageChange}
                 // onRowsPerPageChange={onRowsPerPageChange}
                 page={page}
@@ -277,24 +311,33 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
       sx={{
         flexGrow: 1,
         py: 8,
+        px: 1,
+        backgroundColor: "#FAEAF0",
+        boxShadow: "none",
+        border: "none",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Stack spacing={3}>
           <div>
-            <Typography variant="h4">{formTitle}</Typography>
+            <Typography variant="h4" sx={{ color: "#601631" }}>
+              {formTitle}
+            </Typography>
           </div>
           <div>
             <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
-              <Card>
-                <CardHeader subheader="The information can be edited" title="Role Data" />
+              <div>
+                <CardHeader
+                  subheader="The information can be edited"
+                  title="Role Data"
+                  sx={{ color: "#601631" }}
+                />
                 <CardContent sx={{ pt: 0 }}>
                   <Box sx={{ m: -1.5 }}>
-                    <Grid container spacing={3}>
-                      <Grid xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
-                          helperText="Please specify the name"
                           label="Name"
                           name="name"
                           onChange={formik.handleChange}
@@ -304,13 +347,14 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
                       </Grid>
                     </Grid>
                   </Box>
-                  <Card>
-                    <InputLabel mt={2}>Permissions</InputLabel>
-                    <Stack maxHeight="50vh" overflow="auto">
+                  <Card sx={{ mt: 3, p: 2 }}>
+                    <InputLabel sx={{ color: "#601631", fontWeight: "bold" }}>Permissions</InputLabel>
+                    <Stack maxHeight="50vh" overflow="auto" sx={{ mt: 1 }}>
                       <FormGroup>
                         {permissions.map((p) => (
                           <FormControlLabel
-                            control={<Checkbox defaultChecked />}
+                            key={p.id}
+                            control={<Checkbox />}
                             label={p.name}
                             checked={formik.values.permissions?.includes(p.id)}
                             onChange={(e) => {
@@ -327,13 +371,12 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
                     </Stack>
                   </Card>
                 </CardContent>
-                <Divider />
-                <CardActions sx={{ justifyContent: "flex-end" }}>
-                  <Button variant="contained" type="submit">
+                <CardActions sx={{ justifyContent: "center" }}>
+                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
                     Save details
                   </Button>
                 </CardActions>
-              </Card>
+              </div>
             </form>
           </div>
         </Stack>
@@ -341,3 +384,4 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
     </Box>
   );
 };
+

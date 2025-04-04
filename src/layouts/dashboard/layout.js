@@ -4,6 +4,7 @@ import { withAuthGuard } from 'src/hocs/with-auth-guard';
 import { SideNav } from './side-nav';
 import { TopNav } from './top-nav';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 const SIDE_NAV_WIDTH = 280;
 
@@ -39,6 +40,13 @@ export const Layout = withAuthGuard((props) => {
 
   return (
     <>
+      <Image
+        src="/assets/Background.svg"
+        alt="Background"
+        layout="fill" // Makes it cover the full parent div
+        objectFit="cover" // Ensures it scales properly
+        priority // Loads the image faster
+      />
       <TopNav onNavOpen={() => setOpenNav(true)} />
       <SideNav
         onClose={() => setOpenNav(false)}

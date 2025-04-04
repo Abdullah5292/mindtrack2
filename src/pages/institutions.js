@@ -2,6 +2,7 @@ import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import {
   Box,
+  Modal,
   Button,
   ButtonGroup,
   Card,
@@ -66,6 +67,20 @@ const Page = (props) => {
     if (instRes) setData(instRes);
   };
 
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedLogo, setSelectedLogo] = useState("");
+
+  // Function to open modal and set logo
+  const handleOpenModal = (logo) => {
+    setSelectedLogo(logo);
+    setOpenModal(true);
+  };
+
+  // Function to close modal
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -73,7 +88,7 @@ const Page = (props) => {
   return (
     <>
       <Head>
-        <title>Institutions | Devias Kit</title>
+        <title>Mindtrack | Institutions </title>
       </Head>
       <Box
         component="main"
@@ -86,7 +101,7 @@ const Page = (props) => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Institutions</Typography>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Institutions</Typography>
               </Stack>
               <div>
                 <Button
@@ -96,6 +111,11 @@ const Page = (props) => {
                     </SvgIcon>
                   }
                   variant="contained"
+                  sx={{
+                    backgroundColor: "#24A374",
+                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
+                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
+                  }}
                   onClick={() => {
                     props.openDrawer({
                       width: "30vw",
@@ -121,15 +141,16 @@ const Page = (props) => {
                     });
                   }}
                 >
-                  Add
+                  Add Institution
                 </Button>
+
               </div>
             </Stack>
-            <Card sx={{ p: 2 }}>
+            <Card sx={{ p: 2, backgroundColor: 'white' }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search"
+                placeholder="Search Institutions"
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -137,20 +158,48 @@ const Page = (props) => {
                     </SvgIcon>
                   </InputAdornment>
                 }
-                sx={{ maxWidth: 500 }}
+                sx={{
+                  maxWidth: 500,
+                  backgroundColor: 'white',
+                  color: 'black',
+                  '& input': {
+                    color: 'none',
+                  },
+                  '&::placeholder': {
+                    color: 'black',
+                    opacity: 1,
+                  },
+                  '&:hover': {
+                    backgroundColor: 'white',
+                  },
+                  '& fieldset': {
+                    border: 'none !important', // Completely removes border
+                  },
+                  '&:hover fieldset': {
+                    border: 'none !important',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'white !important', // Keeps background white when focused
+                  },
+                  '&.Mui-focused fieldset': {
+                    border: 'none !important', // No border even when focused
+                  },
+                }}
               />
             </Card>
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
-                  <Table>
+                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
                     <TableHead>
-                      <TableRow>
+                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
                         <TableCell align="left">ID</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>Logo</TableCell>
                         <TableCell>Type</TableCell>
+                        <TableCell>Created At</TableCell>
+                        <TableCell>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -158,12 +207,24 @@ const Page = (props) => {
                         data.map((institution) => {
                           return (
                             <TableRow hover key={institution.id}>
-                              <TableCell align="left">{institution.id}</TableCell>
-                              <TableCell>{institution.name}</TableCell>
-                              <TableCell>{institution.email}</TableCell>
-                              <TableCell>{institution.logo || "NA"}</TableCell>
-                              <TableCell>{institution.type.type}</TableCell>
+                              <TableCell sx={{ color: "white" }} > {institution.id}</TableCell>
+                              <TableCell sx={{ color: "white" }}>{institution.name}</TableCell>
+                              <TableCell sx={{ color: "white" }}>{institution.email}</TableCell>
+                              {/* <TableCell sx={{ color: "white" }}> {console.log("Logo data:", institution.logo)}
+                              </TableCell> */}
+                              {/* View button for logo */}
                               <TableCell>
+                                <Button
+                                  onClick={() => handleOpenModal(institution.logo)}
+                                  variant="outlined"
+                                  sx={{ color: "white", borderColor: "white" }} // Makes text & border white
+                                >
+                                  View
+                                </Button>
+
+                              </TableCell>
+                              <TableCell sx={{ color: "white" }}>{institution.type.type}</TableCell>
+                              <TableCell sx={{ color: "white" }}>
                                 {moment(institution.createdAt).toLocaleString()}
                               </TableCell>
                               <TableCell>
@@ -240,6 +301,7 @@ const Page = (props) => {
               <TablePagination
                 component="div"
                 count={data.length}
+                sx={{ borderTop: "none", backgroundColor: "transparent", color: "white" }}
                 // onPageChange={onPageChange}
                 // onRowsPerPageChange={onRowsPerPageChange}
                 page={page}
@@ -249,7 +311,24 @@ const Page = (props) => {
             </Card>
           </Stack>
         </Container>
-      </Box>
+        <Modal open={openModal} onClose={handleCloseModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "auto",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <img src={selectedLogo} alt="Institution Logo" style={{ maxWidth: "100%", maxHeight: "80vh" }} />
+          </Box>
+        </Modal>
+
+      </Box >
     </>
   );
 };
@@ -268,73 +347,99 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
       email: initialValues?.email || "",
       logo: initialValues?.logo || "",
       logoFile: null,
-      typeId: initialValues?.typeId || "",
+      typeId: initialValues?.typeId || 0,
     },
     onSubmit,
   });
 
   const handleFileChange = (e) => {
     const og = e.target.files[0];
-    const newName = crypto.randomUUID();
-    const newFile = new File([og], newName, {
-      type: og.type,
-      lastModified: og.lastModified,
-    });
-    formik.setFieldValue("logo", newName);
-    formik.setFieldValue("logoFile", newFile);
+    if (og) {
+      const newName = crypto.randomUUID();
+      const newFile = new File([og], newName, { type: og.type, lastModified: og.lastModified });
+      formik.setFieldValue("logo", newName);
+      formik.setFieldValue("logoFile", newFile);
+    }
   };
-
   return (
     <Box
       component="main"
       sx={{
         flexGrow: 1,
         py: 8,
+        px: 1,
+        backgroundColor: "#FAEAF0",
+        boxShadow: "none",
+        border: "none",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Stack spacing={3}>
           <div>
-            <Typography variant="h4">{formTitle}</Typography>
+            <Typography variant="h4" sx={{ color: "#601631" }}>
+              {formTitle}
+            </Typography>
           </div>
           <div>
             <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
-              <Card>
-                <CardHeader subheader="The information can be edited" title="Institution Data" />
+              <div>
+                <CardHeader subheader="The information can be edited" title="Institution Data" sx={{ color: "#601631" }} />
                 <CardContent sx={{ pt: 0 }}>
                   <Box sx={{ m: -1.5 }}>
-                    <Grid container spacing={3}>
-                      <Grid xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
-                          helperText="Please specify the name"
                           label="Name"
                           name="name"
                           onChange={formik.handleChange}
                           required
                           value={formik.values.name}
+                          sx={{
+                            "& label.Mui-focused": { color: "#601631" },
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": { borderColor: "#601631" },
+                              "&:hover fieldset": { borderColor: "#601631" },
+                              "&.Mui-focused fieldset": { borderColor: "#601631" },
+                            },
+                          }}
                         />
                       </Grid>
-                      <Grid xs={12}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
-                          helperText="Please specify the email"
-                          label="Email"
+                          label="Email Address"
                           name="email"
                           onChange={formik.handleChange}
                           required
                           value={formik.values.email}
+                          sx={{
+                            "& label.Mui-focused": { color: "#601631" },
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": { borderColor: "#601631" },
+                              "&:hover fieldset": { borderColor: "#601631" },
+                              "&.Mui-focused fieldset": { borderColor: "#601631" },
+                            },
+                          }}
                         />
                       </Grid>
-                      <Grid xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id="label-logo">Logo</InputLabel>
+                      {/* Logo Section */}
+                      <Grid item xs={12}>
+                        <Typography variant="subtitle1" sx={{ color: "#601631", fontWeight: "bold" }}>
+                          Logo
+                        </Typography>
+                        <FormControl fullWidth sx={{ mt: 1, mb: 2 }}>
                           <input type="file" onChange={handleFileChange} />
                         </FormControl>
                       </Grid>
-                      <Grid xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id="label-type">Type</InputLabel>
+                      {/* Institution Type */}
+                      <Grid item xs={12}>
+                        <FormControl fullWidth sx={{
+                          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                        }}>
+                          <InputLabel id="label-type" sx={{ color: "#601631" }}>Institution Type</InputLabel>
                           <Select
                             fullWidth
                             labelId="label-type"
@@ -342,12 +447,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                             name="typeId"
                             onChange={formik.handleChange}
                             required
-                            select
-                            SelectProps={{ native: true }}
                             value={formik.values.typeId}
                           >
                             {institutionTypes.map((option) => (
-                              <MenuItem key={option.value} value={option.id}>
+                              <MenuItem key={option.id} value={option.id}>
                                 {option.type}
                               </MenuItem>
                             ))}
@@ -357,17 +460,16 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                     </Grid>
                   </Box>
                 </CardContent>
-                <Divider />
-                <CardActions sx={{ justifyContent: "flex-end" }}>
-                  <Button variant="contained" type="submit">
+                <CardActions sx={{ justifyContent: "center" }}>
+                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
                     Save details
                   </Button>
                 </CardActions>
-              </Card>
+              </div>
             </form>
           </div>
         </Stack>
       </Container>
     </Box>
   );
-};
+}

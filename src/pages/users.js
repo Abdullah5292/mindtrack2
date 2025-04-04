@@ -54,6 +54,7 @@ const Page = (props) => {
   const [roles, setRoles] = useState([]);
   const [institutions, setInstitutions] = useState([]);
 
+
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
   }, []);
@@ -80,7 +81,9 @@ const Page = (props) => {
   return (
 
     <div className="flex flex-col w-full h-full relative">
-
+      <Head>
+        <title>Mindtrack | Users</title>
+      </Head>
       <Image
         src="/assets/Background.svg"
         alt="Background"
@@ -110,7 +113,11 @@ const Page = (props) => {
                     </SvgIcon>
                   }
                   variant="contained"
-                  sx={{ backgroundColor: '#24A374' }}
+                  sx={{
+                    backgroundColor: "#24A374",
+                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
+                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
+                  }}
                   onClick={() => {
                     props.openDrawer({
                       width: "30vw",
@@ -120,6 +127,8 @@ const Page = (props) => {
                           onSubmit={async (v) => {
                             try {
                               const res = await authenticatedAxios.post("/users/", v);
+
+
                               if (res.data.status) {
                                 await getData();
                                 props.closeDrawer();
@@ -223,10 +232,23 @@ const Page = (props) => {
                                         <DataForm
                                           title="Edit User"
                                           onSubmit={async (v) => {
-                                            const res = await authenticatedAxios.put("/users/", v);
-                                            if (res.data.status) {
-                                              await getData();
-                                              props.closeDrawer();
+                                            console.log("Submitting data:", v); // Debugging
+
+                                            try {
+                                              const res = await authenticatedAxios.put("/users/", v);
+                                              console.log("Response:", res.data); // Debugging
+
+                                              if (res.data?.status) {
+                                                console.log("Update successful, fetching new data...");
+
+                                                // Wait for data to refresh before closing drawer
+                                                await getData();
+                                                console.log("Fetched updated users");
+                                              } else {
+                                                console.error("Update failed:", res.data);
+                                              }
+                                            } catch (e) {
+                                              console.error("Error updating user:", e);
                                             }
                                           }}
                                           initialValues={user}
@@ -239,6 +261,28 @@ const Page = (props) => {
                                 >
                                   Edit
                                 </Button>
+
+                                {/* <Button
+                                  color="error"
+                                  onClick={() => {
+                                    props.openModal({
+                                      showSubmit: true,
+                                      showCancel: true,
+                                      onSubmit: async () => {
+                                        const res = await authenticatedAxios.delete("/users/", {
+                                          data: { user_id: user.id },
+                                        });
+                                        if (res.data.status) {
+                                          await getData();
+                                          props.closeModal();
+                                        }
+                                      },
+                                    });
+                                  }}
+                                >
+                                  Delete
+                                </Button> */}
+
                                 <Button
                                   color="error"
                                   onClick={() => {
@@ -259,6 +303,7 @@ const Page = (props) => {
                                 >
                                   Delete
                                 </Button>
+
                               </ButtonGroup>
                             </TableCell>
                           </TableRow>
@@ -289,7 +334,6 @@ const Page = (props) => {
 const ModalWrapped = WithModal(Page);
 const DrawerWrapped = WithDrawer(ModalWrapped);
 DrawerWrapped.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
 export default DrawerWrapped;
 const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles = [] }) => {
   const formik = useFormik({
@@ -310,10 +354,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
       sx={{
         flexGrow: 1,
         py: 8,
-        px: 1, // Padding for spacing
-        backgroundColor: "#FAEAF0", // Keep background for main section
-        boxShadow: "none", // No shadow
-        border: "none", // No border
+        px: 1,
+        backgroundColor: "#FAEAF0",
+        boxShadow: "none",
+        border: "none",
       }}
     >
       <Container maxWidth="xl">
@@ -325,12 +369,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
           </div>
           <div>
             <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
-              {/* Removed Card and its content */}
               <div>
                 <CardHeader
                   subheader="The information can be edited"
                   title="User Data"
-                  sx={{ color: "#601631" }} // Text color
+                  sx={{ color: "#601631" }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Box sx={{ m: -1.5 }}>
@@ -343,6 +386,17 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                           onChange={formik.handleChange}
                           required
                           value={formik.values.name}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": { borderColor: "#601631" },
+                              "&:hover fieldset": { borderColor: "#601631" },
+                              "&.Mui-focused fieldset": { borderColor: "#601631", borderWidth: "2px" },
+                            },
+                            "& .MuiInputBase-input": {
+                              fontWeight: "normal",
+                              "&:focus": { fontWeight: "bold" },
+                            },
+                          }}
                         />
                       </Grid>
                       <Grid item xs={12}>
@@ -353,6 +407,17 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                           onChange={formik.handleChange}
                           required
                           value={formik.values.email}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": { borderColor: "#601631" },
+                              "&:hover fieldset": { borderColor: "#601631" },
+                              "&.Mui-focused fieldset": { borderColor: "#601631", borderWidth: "2px" },
+                            },
+                            "& .MuiInputBase-input": {
+                              fontWeight: "normal",
+                              "&:focus": { fontWeight: "bold" },
+                            },
+                          }}
                         />
                       </Grid>
                       <Grid item xs={12}>
@@ -364,6 +429,17 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                           onChange={formik.handleChange}
                           required
                           value={formik.values.password}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              "& fieldset": { borderColor: "#601631" },
+                              "&:hover fieldset": { borderColor: "#601631" },
+                              "&.Mui-focused fieldset": { borderColor: "#601631", borderWidth: "2px" },
+                            },
+                            "& .MuiInputBase-input": {
+                              fontWeight: "normal",
+                              "&:focus": { fontWeight: "bold" },
+                            },
+                          }}
                         />
                       </Grid>
                       <Grid item xs={12}>
@@ -377,9 +453,18 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             onChange={formik.handleChange}
                             required
                             value={formik.values.institutionId}
+                            sx={{
+                              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631", borderWidth: "2px" },
+                              "& .MuiSelect-select": {
+                                fontWeight: "normal",
+                                "&:focus": { fontWeight: "bold" },
+                              },
+                            }}
                           >
                             {institutions.map((option) => (
-                              <MenuItem key={option.value} value={option.id}>
+                              <MenuItem key={option.id} value={option.id}>
                                 {option.name}
                               </MenuItem>
                             ))}
@@ -397,9 +482,18 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             onChange={formik.handleChange}
                             required
                             value={formik.values.roleId}
+                            sx={{
+                              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631", borderWidth: "2px" },
+                              "& .MuiSelect-select": {
+                                fontWeight: "normal",
+                                "&:focus": { fontWeight: "bold" },
+                              },
+                            }}
                           >
                             {roles.map((option) => (
-                              <MenuItem key={option.value} value={option.id}>
+                              <MenuItem key={option.id} value={option.id}>
                                 {option.name}
                               </MenuItem>
                             ))}
@@ -410,7 +504,15 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                   </Box>
                 </CardContent>
                 <CardActions sx={{ justifyContent: "center" }}>
-                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    sx={{
+                      backgroundColor: "#601631",
+                      color: "white",
+                      padding: "10px 60px",
+                    }}
+                  >
                     Save details
                   </Button>
                 </CardActions>

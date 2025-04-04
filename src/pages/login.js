@@ -78,6 +78,7 @@ const Page = () => {
                   </InputAdornment>
                 ),
               }}
+
               InputLabelProps={{ style: { color: "white" } }}
               variant="standard"
             />
@@ -104,6 +105,7 @@ const Page = () => {
                     </InputAdornment>
                   ),
                 }}
+
                 InputLabelProps={{ style: { color: "white" } }}
                 variant="standard"
               />

@@ -1,19 +1,13 @@
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import PropTypes from 'prop-types';
-import ArrowTopRightOnSquareIcon from '@heroicons/react/24/solid/ArrowTopRightOnSquareIcon';
-import ChevronUpDownIcon from '@heroicons/react/24/solid/ChevronUpDownIcon';
 import {
   Box,
-  Button,
   Divider,
   Drawer,
   Stack,
-  SvgIcon,
-  Typography,
   useMediaQuery
 } from '@mui/material';
-import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
 import { items } from './config';
 import { SideNavItem } from './side-nav-item';
@@ -24,7 +18,7 @@ export const SideNav = (props) => {
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
 
   const content = (
-    <Scrollbar // this is the scrollbar for the side nav
+    <Scrollbar
       sx={{
         height: '100%',
         '& .simplebar-content': {
@@ -35,7 +29,7 @@ export const SideNav = (props) => {
         }
       }}
     >
-      <Box // this is the box for the side nav container
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -43,7 +37,7 @@ export const SideNav = (props) => {
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Box // this is the box for the side nav logo
+          <Box
             component={NextLink}
             href="/"
             sx={{
@@ -51,15 +45,12 @@ export const SideNav = (props) => {
               height: 32,
               width: 32
             }}
-          >
-
-          </Box>
-
-
-
+          />
         </Box>
+
         <Divider sx={{ display: 'none' }} />
-        <Box // this is the box for the side nav items
+
+        <Box
           component="nav"
           sx={{
             flexGrow: 1,
@@ -67,9 +58,9 @@ export const SideNav = (props) => {
             py: 3
           }}
         >
-          <Stack // this is the stack for the side nav items
+          <Stack
             component="ul"
-            spacing={2.75} // 22px spacing
+            spacing={2.75}
             sx={{
               listStyle: 'none',
               p: 0,
@@ -77,7 +68,7 @@ export const SideNav = (props) => {
             }}
           >
             {items.map((item) => {
-              const active = item.path ? (pathname === item.path) : false;
+              const active = item.path ? pathname === item.path : false;
 
               return (
                 <SideNavItem
@@ -88,58 +79,67 @@ export const SideNav = (props) => {
                   key={item.title}
                   path={item.path}
                   title={item.title}
+                  sx={{
+                    borderRadius: 1,
+                    px: 2.5,
+                    py: 1.5,
+                    color: active ? 'primary.main' : 'common.white',
+                    backgroundColor: active ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      color: 'primary.light'
+                    }
+                  }}
                 />
               );
             })}
           </Stack>
         </Box>
-        <Divider sx={{ display: 'none' }} />
 
+        <Divider sx={{ display: 'none' }} />
       </Box>
-    </Scrollbar >
+    </Scrollbar>
   );
 
   if (lgUp) {
     return (
-      <Drawer // this handles the side nav for large screens
+      <Drawer
         anchor="left"
         open
         PaperProps={{
           sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)', // Black with 70% opacity
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
             color: 'common.white',
             width: 280,
-            border: 'none', // Remove border
-            boxShadow: 'none' // Remove shadow if any
+            border: 'none',
+            boxShadow: 'none'
           }
         }}
         variant="permanent"
       >
-
         {content}
       </Drawer>
     );
   }
 
   return (
-    <Drawer // this handles the side nav for small screens
+    <Drawer
       anchor="left"
       onClose={onClose}
       open={open}
       PaperProps={{
         sx: {
-          backgroundColor: 'rgba(0, 0, 0, 0.7)', // Black with 70% opacity
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
           color: 'common.white',
           width: 280,
-          border: 'none', // Remove border
-          boxShadow: 'none' // Remove shadow if any
+          border: 'none',
+          boxShadow: 'none'
         }
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}
       variant="temporary"
     >
-
-
       {content}
     </Drawer>
   );
