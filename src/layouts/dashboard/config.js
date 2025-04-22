@@ -14,6 +14,7 @@ export const items = [
   {
     title: "Overview",
     path: "/",
+    requires: [],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <ChartBarIcon />
@@ -23,6 +24,7 @@ export const items = [
   {
     title: "Users",
     path: "/users",
+    requires: ["user-view"],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <UsersIcon />
@@ -33,6 +35,7 @@ export const items = [
   {
     title: "Institutions",
     path: "/institutions",
+    requires: [],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <BuildingLibraryIcon />
@@ -40,10 +43,10 @@ export const items = [
     ),
   },
 
-
   {
     title: "Games",
     path: "/games",
+    requires: [],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <PuzzlePieceIcon />
@@ -53,6 +56,7 @@ export const items = [
   {
     title: "Roles",
     path: "/roles",
+    requires: [],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <UserGroupIcon />
@@ -62,6 +66,7 @@ export const items = [
   {
     title: "Players",
     path: "/players",
+    requires: [],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <UserCircleIcon />
@@ -71,6 +76,7 @@ export const items = [
   {
     title: "Settings",
     path: "/settings",
+    requires: [],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <CogIcon />

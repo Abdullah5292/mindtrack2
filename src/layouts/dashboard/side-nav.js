@@ -1,39 +1,34 @@
-import NextLink from 'next/link';
-import { usePathname } from 'next/navigation';
-import PropTypes from 'prop-types';
-import {
-  Box,
-  Divider,
-  Drawer,
-  Stack,
-  useMediaQuery
-} from '@mui/material';
-import { Scrollbar } from 'src/components/scrollbar';
-import { items } from './config';
-import { SideNavItem } from './side-nav-item';
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import PropTypes from "prop-types";
+import { Box, Divider, Drawer, Stack, useMediaQuery } from "@mui/material";
+import { Scrollbar } from "src/components/scrollbar";
+import { items } from "./config";
+import { SideNavItem } from "./side-nav-item";
+import { hasPermission } from "src/utils/utils";
 
 export const SideNav = (props) => {
   const { open, onClose } = props;
   const pathname = usePathname();
-  const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
+  const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
 
   const content = (
     <Scrollbar
       sx={{
-        height: '100%',
-        '& .simplebar-content': {
-          height: '100%'
+        height: "100%",
+        "& .simplebar-content": {
+          height: "100%",
         },
-        '& .simplebar-scrollbar:before': {
-          background: 'neutral.400'
-        }
+        "& .simplebar-scrollbar:before": {
+          background: "neutral.400",
+        },
       }}
     >
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%'
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
         }}
       >
         <Box sx={{ p: 3 }}>
@@ -41,39 +36,42 @@ export const SideNav = (props) => {
             component={NextLink}
             href="/"
             sx={{
-              display: 'inline-flex',
+              display: "inline-flex",
               height: 32,
-              width: 32
+              width: 32,
             }}
           />
         </Box>
 
-        <Divider sx={{ display: 'none' }} />
+        <Divider sx={{ display: "none" }} />
 
         <Box
           component="nav"
           sx={{
             flexGrow: 1,
             px: 2,
-            py: 3
+            py: 3,
           }}
         >
           <Stack
             component="ul"
             spacing={2.75}
             sx={{
-              listStyle: 'none',
+              listStyle: "none",
               p: 0,
-              m: 0
+              m: 0,
             }}
           >
             {items.map((item) => {
               const active = item.path ? pathname === item.path : false;
-
+              const disabled =
+                item.requires.length > 0
+                  ? !item.requires.some((p) => hasPermission(p))
+                  : item.disabled;
               return (
                 <SideNavItem
                   active={active}
-                  disabled={item.disabled}
+                  disabled={disabled}
                   external={item.external}
                   icon={item.icon}
                   key={item.title}
@@ -83,13 +81,13 @@ export const SideNav = (props) => {
                     borderRadius: 1,
                     px: 2.5,
                     py: 1.5,
-                    color: active ? 'primary.main' : 'common.white',
-                    backgroundColor: active ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      color: 'primary.light'
-                    }
+                    color: active ? "primary.main" : "common.white",
+                    backgroundColor: active ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      color: "primary.light",
+                    },
                   }}
                 />
               );
@@ -97,7 +95,7 @@ export const SideNav = (props) => {
           </Stack>
         </Box>
 
-        <Divider sx={{ display: 'none' }} />
+        <Divider sx={{ display: "none" }} />
       </Box>
     </Scrollbar>
   );
@@ -109,12 +107,12 @@ export const SideNav = (props) => {
         open
         PaperProps={{
           sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: 'common.white',
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            color: "common.white",
             width: 280,
-            border: 'none',
-            boxShadow: 'none'
-          }
+            border: "none",
+            boxShadow: "none",
+          },
         }}
         variant="permanent"
       >
@@ -130,12 +128,12 @@ export const SideNav = (props) => {
       open={open}
       PaperProps={{
         sx: {
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          color: 'common.white',
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          color: "common.white",
           width: 280,
-          border: 'none',
-          boxShadow: 'none'
-        }
+          border: "none",
+          boxShadow: "none",
+        },
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}
       variant="temporary"
@@ -147,5 +145,5 @@ export const SideNav = (props) => {
 
 SideNav.propTypes = {
   onClose: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };

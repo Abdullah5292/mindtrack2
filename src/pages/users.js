@@ -31,7 +31,6 @@ import {
   TableRow,
   TextField,
   Typography,
-
 } from "@mui/material";
 import { useFormik } from "formik";
 import { Fullscreen } from "lucide-react";
@@ -46,6 +45,7 @@ import { getInstitutions, getRoles, getUsers } from "src/utils/client";
 import { getInitials } from "src/utils/get-initials";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
+import { hasPermission } from "src/utils/utils";
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -53,7 +53,6 @@ const Page = (props) => {
   const [data, setData] = useState([]);
   const [roles, setRoles] = useState([]);
   const [institutions, setInstitutions] = useState([]);
-
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
@@ -79,7 +78,6 @@ const Page = (props) => {
   }, []);
 
   return (
-
     <div className="flex flex-col w-full h-full relative">
       <Head>
         <title>Mindtrack | Users</title>
@@ -103,10 +101,13 @@ const Page = (props) => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Users</Typography>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>
+                  Users
+                </Typography>
               </Stack>
               <div>
                 <Button
+                  disabled={!hasPermission("user-add")}
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -128,7 +129,6 @@ const Page = (props) => {
                             try {
                               const res = await authenticatedAxios.post("/users/", v);
 
-
                               if (res.data.status) {
                                 await getData();
                                 props.closeDrawer();
@@ -146,10 +146,9 @@ const Page = (props) => {
                 >
                   Add User
                 </Button>
-
               </div>
             </Stack>
-            <Card sx={{ p: 2, backgroundColor: 'white' }}>
+            <Card sx={{ p: 2, backgroundColor: "white" }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
@@ -163,29 +162,29 @@ const Page = (props) => {
                 }
                 sx={{
                   maxWidth: 500,
-                  backgroundColor: 'white',
-                  color: 'black',
-                  '& input': {
-                    color: 'none',
+                  backgroundColor: "white",
+                  color: "black",
+                  "& input": {
+                    color: "none",
                   },
-                  '&::placeholder': {
-                    color: 'black',
+                  "&::placeholder": {
+                    color: "black",
                     opacity: 1,
                   },
-                  '&:hover': {
-                    backgroundColor: 'white',
+                  "&:hover": {
+                    backgroundColor: "white",
                   },
-                  '& fieldset': {
-                    border: 'none !important', // Completely removes border
+                  "& fieldset": {
+                    border: "none !important", // Completely removes border
                   },
-                  '&:hover fieldset': {
-                    border: 'none !important',
+                  "&:hover fieldset": {
+                    border: "none !important",
                   },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white !important', // Keeps background white when focused
+                  "&.Mui-focused": {
+                    backgroundColor: "white !important", // Keeps background white when focused
                   },
-                  '&.Mui-focused fieldset': {
-                    border: 'none !important', // No border even when focused
+                  "&.Mui-focused fieldset": {
+                    border: "none !important", // No border even when focused
                   },
                 }}
               />
@@ -194,21 +193,38 @@ const Page = (props) => {
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
-                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
-                    <TableHead >
+                  <Table
+                    sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}
+                  >
+                    <TableHead>
                       <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }} align="left">Name</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Email</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Institution</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Role</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Created At</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Actions</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }} align="left">
+                          Name
+                        </TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>
+                          Email
+                        </TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>
+                          Institution
+                        </TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>
+                          Role
+                        </TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>
+                          Created At
+                        </TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>
+                          Actions
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {Array.isArray(data) &&
                         data.map((user) => (
-                          <TableRow key={user.id} sx={{ backgroundColor: "transparent", borderBottom: "none" }}>
+                          <TableRow
+                            key={user.id}
+                            sx={{ backgroundColor: "transparent", borderBottom: "none" }}
+                          >
                             <TableCell sx={{ color: "white" }}>
                               <Stack alignItems="center" direction="row" spacing={2}>
                                 <Avatar src={user?.avatar}>{getInitials(user.name)}</Avatar>
@@ -220,10 +236,13 @@ const Page = (props) => {
                             <TableCell sx={{ color: "white" }}>{user.email}</TableCell>
                             <TableCell sx={{ color: "white" }}>{user.institution.name}</TableCell>
                             <TableCell sx={{ color: "white" }}>{user.role.name}</TableCell>
-                            <TableCell sx={{ color: "white" }}>{moment(user.createdAt).toLocaleString()}</TableCell>
+                            <TableCell sx={{ color: "white" }}>
+                              {moment(user.createdAt).toLocaleString()}
+                            </TableCell>
                             <TableCell>
                               <ButtonGroup variant="contained">
                                 <Button
+                                  disabled={!hasPermission("user-edit")}
                                   color="warning"
                                   onClick={() => {
                                     props.openDrawer({
@@ -235,11 +254,16 @@ const Page = (props) => {
                                             console.log("Submitting data:", v); // Debugging
 
                                             try {
-                                              const res = await authenticatedAxios.put("/users/", v);
+                                              const res = await authenticatedAxios.put(
+                                                "/users/",
+                                                v
+                                              );
                                               console.log("Response:", res.data); // Debugging
 
                                               if (res.data?.status) {
-                                                console.log("Update successful, fetching new data...");
+                                                console.log(
+                                                  "Update successful, fetching new data..."
+                                                );
 
                                                 // Wait for data to refresh before closing drawer
                                                 await getData();
@@ -285,6 +309,7 @@ const Page = (props) => {
 
                                 <Button
                                   color="error"
+                                  disabled={!hasPermission("user-add")}
                                   onClick={() => {
                                     props.openModal({
                                       showSubmit: true,
@@ -303,7 +328,6 @@ const Page = (props) => {
                                 >
                                   Delete
                                 </Button>
-
                               </ButtonGroup>
                             </TableCell>
                           </TableRow>
@@ -311,7 +335,6 @@ const Page = (props) => {
                     </TableBody>
                   </Table>
                 </Box>
-
               </Scrollbar>
               <TablePagination
                 component="div"
@@ -326,8 +349,8 @@ const Page = (props) => {
             </Card>
           </Stack>
         </Container>
-      </Box >
-    </div >
+      </Box>
+    </div>
   );
 };
 
@@ -390,7 +413,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": { borderColor: "#601631" },
                               "&:hover fieldset": { borderColor: "#601631" },
-                              "&.Mui-focused fieldset": { borderColor: "#601631", borderWidth: "2px" },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#601631",
+                                borderWidth: "2px",
+                              },
                             },
                             "& .MuiInputBase-input": {
                               fontWeight: "normal",
@@ -411,7 +437,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": { borderColor: "#601631" },
                               "&:hover fieldset": { borderColor: "#601631" },
-                              "&.Mui-focused fieldset": { borderColor: "#601631", borderWidth: "2px" },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#601631",
+                                borderWidth: "2px",
+                              },
                             },
                             "& .MuiInputBase-input": {
                               fontWeight: "normal",
@@ -433,7 +462,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": { borderColor: "#601631" },
                               "&:hover fieldset": { borderColor: "#601631" },
-                              "&.Mui-focused fieldset": { borderColor: "#601631", borderWidth: "2px" },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#601631",
+                                borderWidth: "2px",
+                              },
                             },
                             "& .MuiInputBase-input": {
                               fontWeight: "normal",
@@ -455,8 +487,13 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             value={formik.values.institutionId}
                             sx={{
                               "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631", borderWidth: "2px" },
+                              "&:hover .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#601631",
+                              },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#601631",
+                                borderWidth: "2px",
+                              },
                               "& .MuiSelect-select": {
                                 fontWeight: "normal",
                                 "&:focus": { fontWeight: "bold" },
@@ -484,8 +521,13 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             value={formik.values.roleId}
                             sx={{
                               "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631", borderWidth: "2px" },
+                              "&:hover .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#601631",
+                              },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#601631",
+                                borderWidth: "2px",
+                              },
                               "& .MuiSelect-select": {
                                 fontWeight: "normal",
                                 "&:focus": { fontWeight: "bold" },

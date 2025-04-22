@@ -12,6 +12,9 @@ const initialState = {
     token: "",
     roleId: 0,
     institutionId: 0,
+    role: {
+      RolePermissions: [],
+    },
     createdAt: "",
     updatedAt: "",
   },

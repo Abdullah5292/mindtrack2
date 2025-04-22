@@ -1,7 +1,6 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -12,16 +11,12 @@ import {
   Checkbox,
   Chip,
   Container,
-  Divider,
-  FormControl,
   FormControlLabel,
   FormGroup,
   Unstable_Grid2 as Grid,
   InputAdornment,
   InputLabel,
-  MenuItem,
   OutlinedInput,
-  Select,
   Stack,
   SvgIcon,
   Table,
@@ -40,8 +35,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
-import { getInstitutions, getPermissions, getRoles } from "src/utils/client";
-import { getInitials } from "src/utils/get-initials";
+import { getPermissions, getRoles } from "src/utils/client";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
 
@@ -87,7 +81,9 @@ const Page = (props) => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Roles</Typography>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>
+                  Roles
+                </Typography>
               </Stack>
               <div>
                 <Button
@@ -129,7 +125,7 @@ const Page = (props) => {
                 </Button>
               </div>
             </Stack>
-            <Card sx={{ p: 2, backgroundColor: 'white' }}>
+            <Card sx={{ p: 2, backgroundColor: "white" }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
@@ -143,29 +139,29 @@ const Page = (props) => {
                 }
                 sx={{
                   maxWidth: 500,
-                  backgroundColor: 'white',
-                  color: 'black',
-                  '& input': {
-                    color: 'none',
+                  backgroundColor: "white",
+                  color: "black",
+                  "& input": {
+                    color: "none",
                   },
-                  '&::placeholder': {
-                    color: 'black',
+                  "&::placeholder": {
+                    color: "black",
                     opacity: 1,
                   },
-                  '&:hover': {
-                    backgroundColor: 'white',
+                  "&:hover": {
+                    backgroundColor: "white",
                   },
-                  '& fieldset': {
-                    border: 'none !important', // Completely removes border
+                  "& fieldset": {
+                    border: "none !important", // Completely removes border
                   },
-                  '&:hover fieldset': {
-                    border: 'none !important',
+                  "&:hover fieldset": {
+                    border: "none !important",
                   },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white !important', // Keeps background white when focused
+                  "&.Mui-focused": {
+                    backgroundColor: "white !important", // Keeps background white when focused
                   },
-                  '&.Mui-focused fieldset': {
-                    border: 'none !important', // No border even when focused
+                  "&.Mui-focused fieldset": {
+                    border: "none !important", // No border even when focused
                   },
                 }}
               />
@@ -173,9 +169,10 @@ const Page = (props) => {
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
-
-                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
-                    <TableHead >
+                  <Table
+                    sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}
+                  >
+                    <TableHead>
                       <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
                         <TableCell align="left">ID</TableCell>
                         <TableCell>Name</TableCell>
@@ -190,21 +187,24 @@ const Page = (props) => {
                         data.map((role) => {
                           return (
                             <TableRow hover key={role.id}>
-                              <TableCell sx={{ color: "white" }} >{role.id}</TableCell>
-                              <TableCell sx={{ color: "white" }} >{role.name}</TableCell>
-                              <TableCell sx={{ color: "white" }} >{role.RolePermissions?.length || 0}</TableCell>
-                              <TableCell sx={{ color: "white" }} >
+                              <TableCell sx={{ color: "white" }}>{role.id}</TableCell>
+                              <TableCell sx={{ color: "white" }}>{role.name}</TableCell>
+                              <TableCell sx={{ color: "white" }}>
+                                {role.RolePermissions?.length || 0}
+                              </TableCell>
+                              <TableCell sx={{ color: "white" }}>
                                 <Stack direction="row" spacing={1}>
                                   {Array.isArray(role.Admins) && role.Admins.length > 0
                                     ? role.Admins.map((admin) => (
-                                      <Chip key={admin.id} label={admin.name} color="primary" /> // ✅ Best practice: Unique `id`
-                                    ))
+                                        <Chip key={admin.id} label={admin.name} color="primary" /> // ✅ Best practice: Unique `id`
+                                      ))
                                     : "-"}
                                 </Stack>
-
                               </TableCell>
 
-                              <TableCell sx={{ color: "white" }} >{moment(role.createdAt).toLocaleString()}</TableCell>
+                              <TableCell sx={{ color: "white" }}>
+                                {moment(role.createdAt).toLocaleString()}
+                              </TableCell>
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
@@ -219,7 +219,7 @@ const Page = (props) => {
                                               try {
                                                 const res = await authenticatedAxios.put(
                                                   "/roles/",
-                                                  v
+                                                  { ...v, role_id: v.id }
                                                 );
                                                 if (res.data.status) {
                                                   await getData();
@@ -348,7 +348,9 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
                     </Grid>
                   </Box>
                   <Card sx={{ mt: 3, p: 2 }}>
-                    <InputLabel sx={{ color: "#601631", fontWeight: "bold" }}>Permissions</InputLabel>
+                    <InputLabel sx={{ color: "#601631", fontWeight: "bold" }}>
+                      Permissions
+                    </InputLabel>
                     <Stack maxHeight="50vh" overflow="auto" sx={{ mt: 1 }}>
                       <FormGroup>
                         {permissions.map((p) => (
@@ -372,7 +374,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
                   </Card>
                 </CardContent>
                 <CardActions sx={{ justifyContent: "center" }}>
-                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}
+                  >
                     Save details
                   </Button>
                 </CardActions>
@@ -384,4 +390,3 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
     </Box>
   );
 };
-
