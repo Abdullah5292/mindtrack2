@@ -2,6 +2,7 @@ import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { IconButton } from "@mui/material";
 import { VisibilityOff } from "@mui/icons-material";
+import SearchUsersBar from "src/components/search";
 
 import {
   Avatar,
@@ -148,7 +149,7 @@ const Page = (props) => {
                 </Button>
               </div>
             </Stack>
-            <Card sx={{ p: 2, backgroundColor: "white" }}>
+            {/* <Card sx={{ p: 2, backgroundColor: "white" }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
@@ -188,8 +189,8 @@ const Page = (props) => {
                   },
                 }}
               />
-            </Card>
-
+            </Card> */}
+            <SearchUsersBar />
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>

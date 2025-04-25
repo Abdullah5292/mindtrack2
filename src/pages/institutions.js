@@ -1,5 +1,6 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import { Buffer } from "buffer";
 import {
   Box,
   Modal,
@@ -40,6 +41,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { uploadFile } from "src/utils/aws";
+import { getFile } from "../utils/aws";
+import { fileName } from "src/utils/aws";
+import { imageSrc } from "src/utils/aws";
 import { authenticatedAxios } from "src/utils/axios";
 import { getInstitutions, getInstitutionTypes } from "src/utils/client";
 import WithDrawer from "src/utils/with-drawer";
@@ -70,16 +74,51 @@ const Page = (props) => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedLogo, setSelectedLogo] = useState("");
 
-  // Function to open modal and set logo
-  const handleOpenModal = (logo) => {
-    setSelectedLogo(logo);
-    setOpenModal(true);
-  };
 
   // Function to close modal
   const handleCloseModal = () => {
     setOpenModal(false);
   };
+
+  const ImageModalComponent = ({ fileName }) => {
+    const [imageSrc, setImageSrc] = useState('');
+    const [openModal, setOpenModal] = useState(false);
+  };
+
+
+  const handleOpenModal = async (fileName) => {
+    try {
+      const file = await getFile(fileName);
+
+      if (!file || !file.Body) throw new Error("Invalid file object");
+
+      // Convert Body to buffer correctly
+      const buffer = file.Body instanceof Uint8Array
+        ? Buffer.from(file.Body)
+        : await streamToBuffer(file.Body); // Fallback if it's a stream
+
+      const base64 = buffer.toString("base64");
+      const mimeType = file.ContentType || "image/jpeg";
+      const imageSrc = `data:${mimeType};base64,${base64}`;
+
+      setImageSrc(imageSrc);
+      setOpenModal(true);
+    } catch (e) {
+      console.error("Error fetching image:", e);
+    }
+  };
+
+  // Only if file.Body is a stream (Node.js Readable stream)
+  const streamToBuffer = async (stream) => {
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(chunks)));
+      stream.on("error", reject);
+    });
+  };
+
+
 
   useEffect(() => {
     getData();
@@ -214,13 +253,40 @@ const Page = (props) => {
                               </TableCell> */}
                               {/* View button for logo */}
                               <TableCell>
-                                <Button
-                                  onClick={() => handleOpenModal(institution.logo)}
+                                {/* <Button
+                                  onClick={() => handleOpenModal(institution.getFile)}
                                   variant="outlined"
                                   sx={{ color: "white", borderColor: "white" }} // Makes text & border white
                                 >
                                   View
+                                </Button> */}
+
+                                <Button
+                                  onClick={() => handleOpenModal(institution.fileName)}
+                                  variant="outlined"
+                                  sx={{ color: "white", borderColor: "white" }}
+                                >
+                                  View
                                 </Button>
+
+
+                                <Modal
+                                  open={openModal}
+                                  onClose={handleCloseModal}
+                                  aria-labelledby="image-modal-title"
+                                  aria-describedby="image-modal-description"
+                                >
+                                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                    {imageSrc ? (
+                                      <img src={imageSrc} alt="S3 Image" style={{ maxWidth: '90%', maxHeight: '90%' }} />
+                                    ) : (
+                                      <p>Loading image...</p>
+                                    )}
+                                  </Box>
+                                </Modal>
+
+
+
 
                               </TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.type.type}</TableCell>
