@@ -63,6 +63,7 @@ const Page = () => {
       </Head>
 
       <Box sx={{ maxWidth: 550, px: 3, py: "100px", width: "100%" }}>
+        <button onClick={() => console.log(process.env)}>dsa</button>
         {/* Logo */}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 7 }}>
           <img src="/assets/logo.png" alt="MindTrack Logo" style={{ maxWidth: "150px" }} />

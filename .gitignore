@@ -1,5 +1,5 @@
 material-kit-react-3.0.0.zip
-node_modules
+node_modules/
 .DS_Store
 .env
 .env.local

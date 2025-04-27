@@ -4,7 +4,7 @@ import { NotificationManager } from "react-notifications";
 import store from "src/redux";
 
 const baseConfig = {
-  baseURL: process.env.BACKEND || "http://localhost:3001/admin",
+  baseURL: process.env.NEXT_PUBLIC_BACKEND,
 };
 
 const onResponseSuccess = (response) => {
