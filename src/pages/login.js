@@ -1,4 +1,12 @@
-import { Box, Button, Stack, TextField, Typography, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stack,
+  TextField,
+  Typography,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,11 +18,16 @@ import { useFormik } from "formik";
 import { unauthenticatedAxios } from "src/utils/axios";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Page = () => {
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = useState(null);
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
   const formik = useFormik({
     initialValues: {
@@ -61,7 +74,7 @@ const Page = () => {
             <TextField
               error={!!(formik.touched.email && formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
-              FormHelperTextProps={{ style: { color: "white" } }} // ✅ White error text
+              FormHelperTextProps={{ style: { color: "white" } }}
               label="Email"
               name="email"
               onBlur={formik.handleBlur}
@@ -78,22 +91,21 @@ const Page = () => {
                   </InputAdornment>
                 ),
               }}
-
               InputLabelProps={{ style: { color: "white" } }}
               variant="standard"
             />
 
-            {/* Password Field + Forgot Password (closer together) */}
+            {/* Password Field */}
             <Box>
               <TextField
                 error={!!(formik.touched.password && formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
-                FormHelperTextProps={{ style: { color: "white" } }} // ✅ White error text
+                FormHelperTextProps={{ style: { color: "white" } }}
                 label="Password"
                 name="password"
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={formik.values.password}
                 fullWidth
                 InputProps={{
@@ -104,24 +116,30 @@ const Page = () => {
                       <LockIcon sx={{ color: "white" }} />
                     </InputAdornment>
                   ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "white" }}>
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
-
                 InputLabelProps={{ style: { color: "white" } }}
                 variant="standard"
               />
 
-              {/* Forgot Password Button - Now Closer */}
+              {/* Forgot Password */}
               <Button
                 sx={{
-                  mt: 0.5, // Reduced margin to bring it closer
+                  mt: 0.5,
                   color: "white",
                   textTransform: "none",
                   fontSize: "14px",
-                  display: 'block', // Make the button a block element
-                  mx: 'auto', // Center the button horizontally
+                  display: "block",
+                  mx: "auto",
                   "&:hover": { color: "#ccc", background: "none" },
                 }}
-                onClick={() => router.push("/forgot-password")}
+                onClick={() => router.push("/forgotpassword")}
               >
                 Forgot Password?
               </Button>
@@ -135,7 +153,7 @@ const Page = () => {
             </Typography>
           )}
 
-          {/* Login Button */}
+          {/* Submit Button */}
           <Button
             fullWidth
             size="large"
@@ -143,9 +161,11 @@ const Page = () => {
               mt: 1,
               bgcolor: formik.values.email && formik.values.password ? "#24A374" : "#156044",
               color: "white",
-              fontWeight: "bold", // ✅ Bolder text
-              fontSize: "18px", // ✅ Larger font
-              "&:hover": { bgcolor: formik.values.email && formik.values.password ? "#24A374" : "#156044" }, // ✅ Remove hover effect
+              fontWeight: "bold",
+              fontSize: "18px",
+              "&:hover": {
+                bgcolor: formik.values.email && formik.values.password ? "#24A374" : "#156044",
+              },
             }}
             type="submit"
             variant="contained"

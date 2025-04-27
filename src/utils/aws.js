@@ -38,9 +38,14 @@ export const getFile = async (fileName) => {
       a,
     };
     const file = await s3.getObject(params).promise();
-    return file
+    // Convert the buffer to a base64 string
+    const base64Image = file.Body.toString('base64');
+
+    // Return the base64-encoded image data (you may want to determine the MIME type dynamically)
+    const imageSrc = `data:image/jpeg;base64,${base64Image}`; // Change 'image/jpeg' if necessary (e.g., 'image/png')
+    return imageSrc;
   } catch (e) {
-    console.error(e);
+    console.error("S3 getObject error:", e);
     return false;
   }
 };
