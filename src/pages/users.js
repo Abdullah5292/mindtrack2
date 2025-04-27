@@ -147,7 +147,7 @@ const Page = (props) => {
                 </Button>
               </div>
             </Stack>
-            {/* <Card sx={{ p: 2, backgroundColor: "white" }}>
+            <Card sx={{ p: 2, backgroundColor: "white" }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
@@ -188,8 +188,7 @@ const Page = (props) => {
                   },
                 }}
               />
-            </Card> */}
-            <SearchUsersBar />
+            </Card>
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>

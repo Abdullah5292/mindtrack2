@@ -1,25 +1,25 @@
+import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Box,
   Button,
+  IconButton,
+  InputAdornment,
   Stack,
   TextField,
   Typography,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
+import { useFormik } from "formik";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Layout as AuthLayout } from "src/layouts/auth/layout";
 import { loginUser } from "src/redux/reducers/user";
-import * as Yup from "yup";
-import { useFormik } from "formik";
 import { unauthenticatedAxios } from "src/utils/axios";
-import EmailIcon from "@mui/icons-material/Email";
-import LockIcon from "@mui/icons-material/Lock";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import * as Yup from "yup";
 
 const Page = () => {
   const router = useRouter();
@@ -63,7 +63,6 @@ const Page = () => {
       </Head>
 
       <Box sx={{ maxWidth: 550, px: 3, py: "100px", width: "100%" }}>
-        <button onClick={() => console.log(process.env)}>dsa</button>
         {/* Logo */}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 7 }}>
           <img src="/assets/logo.png" alt="MindTrack Logo" style={{ maxWidth: "150px" }} />

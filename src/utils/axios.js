@@ -2,9 +2,12 @@ import axios from "axios";
 import { NotificationManager } from "react-notifications";
 
 import store from "src/redux";
+import getConfig from "next/config";
+
+const config = getConfig();
 
 const baseConfig = {
-  baseURL: process.env.NEXT_PUBLIC_BACKEND,
+  baseURL: config.publicRuntimeConfig.backend,
 };
 
 const onResponseSuccess = (response) => {
@@ -17,7 +20,8 @@ const onResponseSuccess = (response) => {
 
 const onResponseError = (response) => {
   if (String(response.config.method).toUpperCase() !== "GET") {
-    if (response.response.data.status !== undefined) NotificationManager.error(response.response.data.message);
+    if (response.response.data.status !== undefined)
+      NotificationManager.error(response.response.data.message);
     else NotificationManager.error("Something went wrong");
   }
   return response;

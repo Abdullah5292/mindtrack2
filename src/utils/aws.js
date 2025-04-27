@@ -1,12 +1,15 @@
 import { NotificationManager } from "react-notifications";
 import AWS from "aws-sdk";
+import getConfig from "next/config";
 
-const S3_BUCKET = process.env.NEXT_PUBLIC_AWS_S3_BUCKET;
-const REGION = process.env.NEXT_PUBLIC_AWS_REGION;
+const config = getConfig();
+
+const S3_BUCKET = config.publicRuntimeConfig.awsS3Bucket;
+const REGION = config.publicRuntimeConfig.awsRegion;
 
 AWS.config.update({
-  accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY,
-  secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_KEY,
+  accessKeyId: config.publicRuntimeConfig.awsAccessKey,
+  secretAccessKey: config.publicRuntimeConfig.awsSecretKey,
 });
 
 const s3 = new AWS.S3({
@@ -39,7 +42,7 @@ export const getFile = async (fileName) => {
     };
     const file = await s3.getObject(params).promise();
     // Convert the buffer to a base64 string
-    const base64Image = file.Body.toString('base64');
+    const base64Image = file.Body.toString("base64");
 
     // Return the base64-encoded image data (you may want to determine the MIME type dynamically)
     const imageSrc = `data:image/jpeg;base64,${base64Image}`; // Change 'image/jpeg' if necessary (e.g., 'image/png')
