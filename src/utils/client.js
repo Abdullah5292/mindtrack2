@@ -1,7 +1,7 @@
 import { authenticatedAxios } from "./axios";
 
-export const getUsers = async () => {
-  const response = await authenticatedAxios.get("/users/");
+export const getUsers = async (search) => {
+  const response = await authenticatedAxios.get("/users/", { params: { search } });
   if (response.data?.status) return response.data.data;
   return false;
 };
@@ -41,4 +41,3 @@ export const getInstitutionTypes = async () => {
   if (response.data?.status) return response.data.data;
   return false;
 };
-

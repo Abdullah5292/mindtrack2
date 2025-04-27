@@ -1,12 +1,12 @@
 import { NotificationManager } from "react-notifications";
 import AWS from "aws-sdk";
 
-const S3_BUCKET = "mindtrack";
-const REGION = "ap-south-1";
+const S3_BUCKET = process.env.AWS_S3_BUCKET;
+const REGION = process.env.AWS_REGION;
 
 AWS.config.update({
-  accessKeyId: "AKIAQS6GSQA2BPQVRHDA",
-  secretAccessKey: "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",
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY,
 });
 
 const s3 = new AWS.S3({

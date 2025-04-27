@@ -1,7 +1,5 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { IconButton } from "@mui/material";
-import { VisibilityOff } from "@mui/icons-material";
 
 import {
   Avatar,
@@ -13,7 +11,6 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Divider,
   FormControl,
   Unstable_Grid2 as Grid,
   InputAdornment,
@@ -33,7 +30,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { Fullscreen } from "lucide-react";
 import moment from "moment";
 import Head from "next/head";
 import Image from "next/image";
@@ -43,9 +39,9 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
 import { getInstitutions, getRoles, getUsers } from "src/utils/client";
 import { getInitials } from "src/utils/get-initials";
+import { hasPermission } from "src/utils/utils";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
-import { hasPermission } from "src/utils/utils";
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -62,10 +58,12 @@ const Page = (props) => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  const getData = async () => {
-    const res = await getUsers();
+  const getData = async (search) => {
+    const res = await getUsers(search);
     if (res) setData(res);
+  };
 
+  const getMiscData = async () => {
     const roleRes = await getRoles();
     if (roleRes) setRoles(roleRes);
 
@@ -74,7 +72,8 @@ const Page = (props) => {
   };
 
   useEffect(() => {
-    getData();
+    getData("");
+    getMiscData();
   }, []);
 
   return (
@@ -130,7 +129,7 @@ const Page = (props) => {
                               const res = await authenticatedAxios.post("/users/", v);
 
                               if (res.data.status) {
-                                await getData();
+                                await getMiscData();
                                 props.closeDrawer();
                               }
                             } catch (e) {
@@ -152,7 +151,8 @@ const Page = (props) => {
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search Users"
+                placeholder="Search Users By Name/Email"
+                onChange={(e) => getData(e.target.value)}
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -266,7 +266,7 @@ const Page = (props) => {
                                                 );
 
                                                 // Wait for data to refresh before closing drawer
-                                                await getData();
+                                                await getMiscData();
                                                 console.log("Fetched updated users");
                                               } else {
                                                 console.error("Update failed:", res.data);
@@ -319,7 +319,7 @@ const Page = (props) => {
                                           data: { user_id: user.id },
                                         });
                                         if (res.data.status) {
-                                          await getData();
+                                          await getMiscData();
                                           props.closeModal();
                                         }
                                       },
