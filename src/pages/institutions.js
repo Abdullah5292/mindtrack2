@@ -74,17 +74,15 @@ const Page = (props) => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedLogo, setSelectedLogo] = useState("");
 
-
   // Function to close modal
   const handleCloseModal = () => {
     setOpenModal(false);
   };
 
   const ImageModalComponent = ({ fileName }) => {
-    const [imageSrc, setImageSrc] = useState('');
+    const [imageSrc, setImageSrc] = useState("");
     const [openModal, setOpenModal] = useState(false);
   };
-
 
   const handleOpenModal = async (fileName) => {
     try {
@@ -93,9 +91,8 @@ const Page = (props) => {
       if (!file || !file.Body) throw new Error("Invalid file object");
 
       // Convert Body to buffer correctly
-      const buffer = file.Body instanceof Uint8Array
-        ? Buffer.from(file.Body)
-        : await streamToBuffer(file.Body); // Fallback if it's a stream
+      const buffer =
+        file.Body instanceof Uint8Array ? Buffer.from(file.Body) : await streamToBuffer(file.Body); // Fallback if it's a stream
 
       const base64 = buffer.toString("base64");
       const mimeType = file.ContentType || "image/jpeg";
@@ -118,8 +115,6 @@ const Page = (props) => {
     });
   };
 
-
-
   useEffect(() => {
     getData();
   }, []);
@@ -140,7 +135,9 @@ const Page = (props) => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Institutions</Typography>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>
+                  Institutions
+                </Typography>
               </Stack>
               <div>
                 <Button
@@ -182,10 +179,9 @@ const Page = (props) => {
                 >
                   Add Institution
                 </Button>
-
               </div>
             </Stack>
-            <Card sx={{ p: 2, backgroundColor: 'white' }}>
+            <Card sx={{ p: 2, backgroundColor: "white" }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
@@ -199,29 +195,29 @@ const Page = (props) => {
                 }
                 sx={{
                   maxWidth: 500,
-                  backgroundColor: 'white',
-                  color: 'black',
-                  '& input': {
-                    color: 'none',
+                  backgroundColor: "white",
+                  color: "black",
+                  "& input": {
+                    color: "none",
                   },
-                  '&::placeholder': {
-                    color: 'black',
+                  "&::placeholder": {
+                    color: "black",
                     opacity: 1,
                   },
-                  '&:hover': {
-                    backgroundColor: 'white',
+                  "&:hover": {
+                    backgroundColor: "white",
                   },
-                  '& fieldset': {
-                    border: 'none !important', // Completely removes border
+                  "& fieldset": {
+                    border: "none !important", // Completely removes border
                   },
-                  '&:hover fieldset': {
-                    border: 'none !important',
+                  "&:hover fieldset": {
+                    border: "none !important",
                   },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white !important', // Keeps background white when focused
+                  "&.Mui-focused": {
+                    backgroundColor: "white !important", // Keeps background white when focused
                   },
-                  '&.Mui-focused fieldset': {
-                    border: 'none !important', // No border even when focused
+                  "&.Mui-focused fieldset": {
+                    border: "none !important", // No border even when focused
                   },
                 }}
               />
@@ -229,7 +225,9 @@ const Page = (props) => {
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
-                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
+                  <Table
+                    sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}
+                  >
                     <TableHead>
                       <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
                         <TableCell align="left">ID</TableCell>
@@ -246,7 +244,7 @@ const Page = (props) => {
                         data.map((institution) => {
                           return (
                             <TableRow hover key={institution.id}>
-                              <TableCell sx={{ color: "white" }} > {institution.id}</TableCell>
+                              <TableCell sx={{ color: "white" }}> {institution.id}</TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.name}</TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.email}</TableCell>
                               {/* <TableCell sx={{ color: "white" }}> {console.log("Logo data:", institution.logo)}
@@ -262,13 +260,13 @@ const Page = (props) => {
                                 </Button> */}
 
                                 <Button
-                                  onClick={() => handleOpenModal(institution.fileName)}
+                                  disabled={institution.logo === ""}
+                                  onClick={() => handleOpenModal(institution.logo)}
                                   variant="outlined"
                                   sx={{ color: "white", borderColor: "white" }}
                                 >
                                   View
                                 </Button>
-
 
                                 <Modal
                                   open={openModal}
@@ -276,18 +274,25 @@ const Page = (props) => {
                                   aria-labelledby="image-modal-title"
                                   aria-describedby="image-modal-description"
                                 >
-                                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      height: "100%",
+                                    }}
+                                  >
                                     {imageSrc ? (
-                                      <img src={imageSrc} alt="S3 Image" style={{ maxWidth: '90%', maxHeight: '90%' }} />
+                                      <img
+                                        src={imageSrc}
+                                        alt="S3 Image"
+                                        style={{ maxWidth: "90%", maxHeight: "90%" }}
+                                      />
                                     ) : (
                                       <p>Loading image...</p>
                                     )}
                                   </Box>
                                 </Modal>
-
-
-
-
                               </TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.type.type}</TableCell>
                               <TableCell sx={{ color: "white" }}>
@@ -390,11 +395,14 @@ const Page = (props) => {
               p: 4,
             }}
           >
-            <img src={selectedLogo} alt="Institution Logo" style={{ maxWidth: "100%", maxHeight: "80vh" }} />
+            <img
+              src={selectedLogo}
+              alt="Institution Logo"
+              style={{ maxWidth: "100%", maxHeight: "80vh" }}
+            />
           </Box>
         </Modal>
-
-      </Box >
+      </Box>
     </>
   );
 };
@@ -449,7 +457,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
           <div>
             <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
               <div>
-                <CardHeader subheader="The information can be edited" title="Institution Data" sx={{ color: "#601631" }} />
+                <CardHeader
+                  subheader="The information can be edited"
+                  title="Institution Data"
+                  sx={{ color: "#601631" }}
+                />
                 <CardContent sx={{ pt: 0 }}>
                   <Box sx={{ m: -1.5 }}>
                     <Grid container spacing={2}>
@@ -491,7 +503,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                       </Grid>
                       {/* Logo Section */}
                       <Grid item xs={12}>
-                        <Typography variant="subtitle1" sx={{ color: "#601631", fontWeight: "bold" }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ color: "#601631", fontWeight: "bold" }}
+                        >
                           Logo
                         </Typography>
                         <FormControl fullWidth sx={{ mt: 1, mb: 2 }}>
@@ -500,12 +515,19 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                       </Grid>
                       {/* Institution Type */}
                       <Grid item xs={12}>
-                        <FormControl fullWidth sx={{
-                          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                        }}>
-                          <InputLabel id="label-type" sx={{ color: "#601631" }}>Institution Type</InputLabel>
+                        <FormControl
+                          fullWidth
+                          sx={{
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#601631",
+                            },
+                          }}
+                        >
+                          <InputLabel id="label-type" sx={{ color: "#601631" }}>
+                            Institution Type
+                          </InputLabel>
                           <Select
                             fullWidth
                             labelId="label-type"
@@ -527,7 +549,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                   </Box>
                 </CardContent>
                 <CardActions sx={{ justifyContent: "center" }}>
-                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}
+                  >
                     Save details
                   </Button>
                 </CardActions>
@@ -538,4 +564,4 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
       </Container>
     </Box>
   );
-}
+};

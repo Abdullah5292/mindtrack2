@@ -38,9 +38,9 @@ export const getFile = async (fileName) => {
     const params = {
       Bucket: S3_BUCKET,
       Key: fileName,
-      a,
     };
     const file = await s3.getObject(params).promise();
+    if (!file) return null;
     // Convert the buffer to a base64 string
     const base64Image = file.Body.toString("base64");
 

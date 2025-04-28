@@ -93,7 +93,9 @@ const Page = (props) => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Games</Typography>
+                <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>
+                  Games
+                </Typography>
               </Stack>
               <div>
                 <Button
@@ -136,7 +138,7 @@ const Page = (props) => {
                 </Button>
               </div>
             </Stack>
-            <Card sx={{ p: 2, backgroundColor: 'white' }}>
+            <Card sx={{ p: 2, backgroundColor: "white" }}>
               <OutlinedInput
                 defaultValue=""
                 fullWidth
@@ -150,29 +152,29 @@ const Page = (props) => {
                 }
                 sx={{
                   maxWidth: 500,
-                  backgroundColor: 'white',
-                  color: 'black',
-                  '& input': {
-                    color: 'none',
+                  backgroundColor: "white",
+                  color: "black",
+                  "& input": {
+                    color: "none",
                   },
-                  '&::placeholder': {
-                    color: 'black',
+                  "&::placeholder": {
+                    color: "black",
                     opacity: 1,
                   },
-                  '&:hover': {
-                    backgroundColor: 'white',
+                  "&:hover": {
+                    backgroundColor: "white",
                   },
-                  '& fieldset': {
-                    border: 'none !important', // Completely removes border
+                  "& fieldset": {
+                    border: "none !important", // Completely removes border
                   },
-                  '&:hover fieldset': {
-                    border: 'none !important',
+                  "&:hover fieldset": {
+                    border: "none !important",
                   },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white !important', // Keeps background white when focused
+                  "&.Mui-focused": {
+                    backgroundColor: "white !important", // Keeps background white when focused
                   },
-                  '&.Mui-focused fieldset': {
-                    border: 'none !important', // No border even when focused
+                  "&.Mui-focused fieldset": {
+                    border: "none !important", // No border even when focused
                   },
                 }}
               />
@@ -180,7 +182,9 @@ const Page = (props) => {
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
-                  <Table sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}>
+                  <Table
+                    sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)", color: "white", border: "none" }}
+                  >
                     <TableHead>
                       <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
                         <TableCell align="left">ID</TableCell>
@@ -199,23 +203,32 @@ const Page = (props) => {
                         data.map((game) => {
                           return (
                             <TableRow hover key={game?.id}>
-                              <TableCell sx={{ color: "white" }} align="left">{game?.id}</TableCell>
+                              <TableCell sx={{ color: "white" }} align="left">
+                                {game?.id}
+                              </TableCell>
                               <TableCell sx={{ color: "white" }}> {game?.name}</TableCell>
-                              <TableCell sx={{ color: "white" }}>{game.institution?.name}</TableCell>
-                              <TableCell sx={{ color: "white" }} l>{game.GameQuestion?.length || 0}</TableCell>
-                              <TableCell sx={{ color: "white" }}>{game.giveQuestions || 0}</TableCell>
+                              <TableCell sx={{ color: "white" }}>
+                                {game.institution?.name}
+                              </TableCell>
+                              <TableCell sx={{ color: "white" }} l>
+                                {game.GameQuestion?.length || 0}
+                              </TableCell>
+                              <TableCell sx={{ color: "white" }}>
+                                {game.giveQuestions || 0}
+                              </TableCell>
                               <TableCell sx={{ color: "white" }}>{game.time || 0}s</TableCell>
                               <TableCell sx={{ color: "white" }}>
-
-
                                 <Stack direction="row" spacing={1}>
                                   {Array.isArray(game.tags) && game.tags.length > 0
-                                    ? game.tags.map((a, index) => <Chip key={index} label={a} color="primary" />)  // ✅ Added key
+                                    ? game.tags.map((a, index) => (
+                                        <Chip key={index} label={a} color="primary" />
+                                      )) // ✅ Added key
                                     : "-"}
                                 </Stack>
-
                               </TableCell>
-                              <TableCell sx={{ color: "white" }}>{moment(game?.createdAt).toLocaleString()}</TableCell>
+                              <TableCell sx={{ color: "white" }}>
+                                {moment(game?.createdAt).toLocaleString()}
+                              </TableCell>
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
@@ -299,7 +312,7 @@ const Page = (props) => {
             </Card>
           </Stack>
         </Container>
-      </Box >
+      </Box>
     </>
   );
 };
@@ -317,7 +330,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
       name: initialValues?.name || "",
       institutionId: initialValues?.institutionId || 0,
       tags: initialValues?.tags || [],
-      questions: initialValues?.GameQuestion.map((q) => q.questionId) || [],
+      questions: initialValues?.GameQuestion?.map((q) => q.questionId) || [],
       giveQuestions: initialValues?.giveQuestions || 0,
       time: initialValues?.time || 0,
     },
@@ -386,7 +399,9 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                           sx={{
                             "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
                             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#601631",
+                            },
                           }}
                         >
                           {institutions.map((option) => (
@@ -470,7 +485,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
               </CardContent>
               <Divider sx={{ borderColor: "#601631" }} />
               <CardActions sx={{ justifyContent: "flex-end" }}>
-                <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white" }}>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  sx={{ backgroundColor: "#601631", color: "white" }}
+                >
                   Save details
                 </Button>
               </CardActions>
@@ -492,10 +511,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                     checked={formik.values.questions?.includes(q.id)}
                     onChange={(e) => {
                       formik.setFieldValue(
-                        "GameQuestion",
+                        "questions",
                         e.target.checked
-                          ? [...formik.values.GameQuestion, q.id]
-                          : formik.values.GameQuestion.filter((i) => i !== q.id)
+                          ? [...formik.values.questions, q.id]
+                          : formik.values.questions.filter((i) => i !== q.id)
                       );
                     }}
                     sx={{ color: "#601631" }}

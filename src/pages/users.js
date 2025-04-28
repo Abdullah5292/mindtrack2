@@ -129,7 +129,7 @@ const Page = (props) => {
                               const res = await authenticatedAxios.post("/users/", v);
 
                               if (res.data.status) {
-                                await getMiscData();
+                                await getData();
                                 props.closeDrawer();
                               }
                             } catch (e) {
@@ -265,7 +265,7 @@ const Page = (props) => {
                                                 );
 
                                                 // Wait for data to refresh before closing drawer
-                                                await getMiscData();
+                                                await getData();
                                                 console.log("Fetched updated users");
                                               } else {
                                                 console.error("Update failed:", res.data);
