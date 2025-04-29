@@ -445,11 +445,19 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                               fontWeight: "normal",
                               "&:focus": { fontWeight: "bold" },
                             },
+                            // Override autofill background
+                            '& input:-webkit-autofill': {
+                              WebkitBoxShadow: '0 0 0 1000px #FAEAF0 inset',
+                              WebkitTextFillColor: 'black',
+                              caretColor: 'black',
+                              fontWeight: "normal",
+                            },
                           }}
                         />
+
                       </Grid>
                       <Grid item xs={12}>
-                        <TextField
+                        {/* <TextField
                           fullWidth
                           label="Password"
                           name="password"
@@ -471,7 +479,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                               "&:focus": { fontWeight: "bold" },
                             },
                           }}
-                        />
+                        /> */}
                       </Grid>
                       <Grid item xs={12}>
                         <FormControl fullWidth>
@@ -552,10 +560,19 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                       backgroundColor: "#601631",
                       color: "white",
                       padding: "10px 60px",
+                      '&:hover': {
+                        backgroundColor: '#4a1026', // darker shade on hover
+                      },
+                      '&:active': {
+                        backgroundColor: '#380c1c', // even darker on click
+                      },
+                      boxShadow: 'none', // optional: remove default MUI shadow
+                      textTransform: 'none', // optional: prevent all-uppercase text
                     }}
                   >
                     Save details
                   </Button>
+
                 </CardActions>
               </div>
             </form>
