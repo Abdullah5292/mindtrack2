@@ -204,13 +204,12 @@ const Page = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
+
                       {Array.isArray(data) &&
-                        data.map((game) => {
+                        data.map((game, index) => {
                           return (
                             <TableRow hover key={game?.id}>
-                              <TableCell sx={{ color: "white" }} align="left">
-                                {game?.id}
-                              </TableCell>
+                              <TableCell sx={{ color: "white" }}>{index + 1}</TableCell>
                               <TableCell sx={{ color: "white" }}> {game?.name}</TableCell>
                               <TableCell sx={{ color: "white" }}>
                                 {game.institution?.name}
@@ -364,7 +363,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
             <Card elevation={0} sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
               <CardHeader
                 subheader="The information can be edited"
-                title="Institution Data"
+                title="Game Data"
                 sx={{ color: "#601631" }}
               />
               <CardContent sx={{ pt: 0 }}>
@@ -489,14 +488,29 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                 </Box>
               </CardContent>
               <Divider sx={{ borderColor: "#601631" }} />
-              <CardActions sx={{ justifyContent: "flex-end" }}>
+              <CardActions sx={{ justifyContent: "center" }}>
                 <Button
                   variant="contained"
                   type="submit"
-                  sx={{ backgroundColor: "#601631", color: "white" }}
+                  //center button
+
+                  sx={{
+                    backgroundColor: "#601631",
+                    color: "white",
+                    padding: "10px 60px",
+                    '&:hover': {
+                      backgroundColor: '#4a1026', // darker shade on hover
+                    },
+                    '&:active': {
+                      backgroundColor: '#380c1c', // even darker on click
+                    },
+                    boxShadow: 'none', // optional: remove default MUI shadow
+                    textTransform: 'none', // optional: prevent all-uppercase text
+                  }}
                 >
                   Save details
                 </Button>
+
               </CardActions>
             </Card>
           </form>

@@ -560,10 +560,23 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                   <Button
                     variant="contained"
                     type="submit"
-                    sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}
+                    sx={{
+                      backgroundColor: "#601631",
+                      color: "white",
+                      padding: "10px 60px",
+                      '&:hover': {
+                        backgroundColor: '#4a1026', // darker shade on hover
+                      },
+                      '&:active': {
+                        backgroundColor: '#380c1c', // even darker on click
+                      },
+                      boxShadow: 'none', // optional: remove default MUI shadow
+                      textTransform: 'none', // optional: prevent all-uppercase text
+                    }}
                   >
                     Save details
                   </Button>
+
                 </CardActions>
               </div>
             </form>

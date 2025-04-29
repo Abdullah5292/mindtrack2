@@ -191,10 +191,10 @@ const Page = (props) => {
                     </TableHead>
                     <TableBody>
                       {Array.isArray(data) &&
-                        data.map((role) => {
+                        data.map((role, index) => {
                           return (
                             <TableRow hover key={role.id}>
-                              <TableCell sx={{ color: "white" }}>{role.id}</TableCell>
+                              <TableCell sx={{ color: "white" }}>{index + 1}</TableCell>
                               <TableCell sx={{ color: "white" }}>{role.name}</TableCell>
                               <TableCell sx={{ color: "white" }}>
                                 {role.RolePermissions?.length || 0}
@@ -384,10 +384,23 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
                   <Button
                     variant="contained"
                     type="submit"
-                    sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}
+                    sx={{
+                      backgroundColor: "#601631",
+                      color: "white",
+                      padding: "10px 60px",
+                      '&:hover': {
+                        backgroundColor: '#4a1026', // darker shade on hover
+                      },
+                      '&:active': {
+                        backgroundColor: '#380c1c', // even darker on click
+                      },
+                      boxShadow: 'none', // optional: remove default MUI shadow
+                      textTransform: 'none', // optional: prevent all-uppercase text
+                    }}
                   >
                     Save details
                   </Button>
+
                 </CardActions>
               </div>
             </form>
