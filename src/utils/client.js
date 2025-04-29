@@ -6,8 +6,8 @@ export const getUsers = async (search) => {
   return false;
 };
 
-export const getInstitutions = async () => {
-  const response = await authenticatedAxios.get("/institutions/");
+export const getInstitutions = async (search) => {
+  const response = await authenticatedAxios.get("/institutions/", { params: { search } });
   if (response.data?.status) return response.data.data;
   return false;
 };
@@ -18,14 +18,14 @@ export const getQuestions = async () => {
   return false;
 };
 
-export const getGames = async () => {
-  const response = await authenticatedAxios.get("/games/");
+export const getGames = async (search) => {
+  const response = await authenticatedAxios.get("/games/", { params: { search } });
   if (response.data?.status) return response.data.data;
   return false;
 };
 
-export const getRoles = async () => {
-  const response = await authenticatedAxios.get("/roles/");
+export const getRoles = async (search) => {
+  const response = await authenticatedAxios.get("/roles/", { params: { search } });
   if (response.data?.status) return response.data.data;
   return false;
 };

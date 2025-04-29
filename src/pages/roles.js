@@ -53,7 +53,12 @@ const Page = (props) => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  const getData = async () => {
+  const getData = async (search) => {
+    const res = await getRoles(search);
+    if (res) setData(res);
+  };
+
+  const getMiscData = async () => {
     const roleRes = await getRoles();
     if (roleRes) setData(roleRes);
 
@@ -62,7 +67,8 @@ const Page = (props) => {
   };
 
   useEffect(() => {
-    getData();
+    getData("");
+    getMiscData();
   }, []);
 
   return (
@@ -129,7 +135,8 @@ const Page = (props) => {
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search Roles"
+                placeholder="Search Roles By Name"
+                onChange={(e) => getData(e.target.value)}
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -196,8 +203,8 @@ const Page = (props) => {
                                 <Stack direction="row" spacing={1}>
                                   {Array.isArray(role.Admins) && role.Admins.length > 0
                                     ? role.Admins.map((admin) => (
-                                        <Chip key={admin.id} label={admin.name} color="primary" /> // ✅ Best practice: Unique `id`
-                                      ))
+                                      <Chip key={admin.id} label={admin.name} color="primary" /> // ✅ Best practice: Unique `id`
+                                    ))
                                     : "-"}
                                 </Stack>
                               </TableCell>
@@ -222,8 +229,8 @@ const Page = (props) => {
                                                   { ...v, role_id: v.id }
                                                 );
                                                 if (res.data.status) {
-                                                  await getData();
-                                                  props.closeDrawer();
+                                                  await getMiscData();
+                                                  props.closeModal();
                                                 }
                                               } catch (e) {
                                                 console.error(e);
@@ -250,7 +257,7 @@ const Page = (props) => {
                                               data: { role_id: role.id },
                                             });
                                             if (res.data.status) {
-                                              await getData();
+                                              await getMiscData();
                                               props.closeModal();
                                             }
                                           } catch (e) {
