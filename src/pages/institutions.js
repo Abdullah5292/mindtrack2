@@ -63,13 +63,18 @@ const Page = (props) => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  const getData = async () => {
+  const getMiscData = async () => {
     const typeRes = await getInstitutionTypes();
     if (typeRes) setInstitutionTypes(typeRes);
 
     const instRes = await getInstitutions();
     if (instRes) setData(instRes);
   };
+  const getData = async (search) => {
+    const res = await getInstitutions(search);
+    if (res) setData(res);
+  };
+
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedLogo, setSelectedLogo] = useState("");
@@ -115,8 +120,10 @@ const Page = (props) => {
     });
   };
 
+
   useEffect(() => {
-    getData();
+    getData("");
+    getMiscData();
   }, []);
 
   return (
@@ -163,8 +170,8 @@ const Page = (props) => {
                               if (uploadFile(v.logoFile)) {
                                 const res = await authenticatedAxios.post("/institutions/", v);
                                 if (res.data.status) {
-                                  await getData();
-                                  props.closeDrawer();
+                                  await getMiscData();
+                                  props.closeModal();
                                 }
                               }
                             } catch (e) {
@@ -185,7 +192,8 @@ const Page = (props) => {
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search Institutions"
+                placeholder="Search Institutions By Name/Email"
+                onChange={(e) => getData(e.target.value)}
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -241,10 +249,10 @@ const Page = (props) => {
                     </TableHead>
                     <TableBody>
                       {Array.isArray(data) &&
-                        data.map((institution) => {
+                        data.map((institution, index) => {
                           return (
                             <TableRow hover key={institution.id}>
-                              <TableCell sx={{ color: "white" }}> {institution.id}</TableCell>
+                              <TableCell sx={{ color: "white" }}>{index + 1}</TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.name}</TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.email}</TableCell>
                               {/* <TableCell sx={{ color: "white" }}> {console.log("Logo data:", institution.logo)}
@@ -316,8 +324,8 @@ const Page = (props) => {
                                                     v
                                                   );
                                                   if (res.data.status) {
-                                                    await getData();
-                                                    props.closeDrawer();
+                                                    await getMiscData();
+                                                    props.closeModal();
                                                   }
                                                 }
                                               } catch (e) {
@@ -348,7 +356,7 @@ const Page = (props) => {
                                               }
                                             );
                                             if (res.data.status) {
-                                              await getData();
+                                              await getMiscData();
                                               props.closeModal();
                                             }
                                           } catch (e) {

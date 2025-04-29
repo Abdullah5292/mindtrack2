@@ -84,7 +84,10 @@ const Page = () => {
               fullWidth
               InputProps={{
                 disableUnderline: true,
-                style: { color: "white", borderBottom: "1px solid white" },
+                style: {
+                  color: "white",
+                  borderBottom: "1px solid white",
+                },
                 startAdornment: (
                   <InputAdornment position="start">
                     <EmailIcon sx={{ color: "white" }} />
@@ -93,7 +96,16 @@ const Page = () => {
               }}
               InputLabelProps={{ style: { color: "white" } }}
               variant="standard"
+              sx={{
+                '& input:-webkit-autofill': {
+                  WebkitBoxShadow: '0 0 0 1000px transparent inset',
+                  WebkitTextFillColor: 'white',
+                  caretColor: 'white',
+                  transition: 'background-color 5000s ease-in-out 0s',
+                },
+              }}
             />
+
 
             {/* Password Field */}
             <Box>
@@ -110,7 +122,6 @@ const Page = () => {
                 fullWidth
                 InputProps={{
                   disableUnderline: true,
-                  style: { color: "white", borderBottom: "1px solid white" },
                   startAdornment: (
                     <InputAdornment position="start">
                       <LockIcon sx={{ color: "white" }} />
@@ -118,7 +129,11 @@ const Page = () => {
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "white" }}>
+                      <IconButton
+                        onClick={handleTogglePassword}
+                        edge="end"
+                        sx={{ color: "white" }}
+                      >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -126,6 +141,21 @@ const Page = () => {
                 }}
                 InputLabelProps={{ style: { color: "white" } }}
                 variant="standard"
+                sx={{
+                  '& .MuiInputBase-root': {
+                    color: 'white',
+                    borderBottom: '1px solid white',
+                  },
+                  '& input': {
+                    color: 'white',
+                  },
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 1000px transparent inset',
+                    WebkitTextFillColor: 'white',
+                    caretColor: 'white',
+                    transition: 'background-color 5000s ease-in-out 0s',
+                  },
+                }}
               />
 
               {/* Forgot Password */}

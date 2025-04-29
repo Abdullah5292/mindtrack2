@@ -75,7 +75,7 @@ const Page = () => {
                             error={!!(formik.touched.email && formik.errors.email)}
                             helperText={formik.touched.email && formik.errors.email}
                             FormHelperTextProps={{ style: { color: "white" } }}
-                            label="Email"
+                            label=""
                             name="email"
                             onBlur={formik.handleBlur}
                             onChange={formik.handleChange}
@@ -84,16 +84,36 @@ const Page = () => {
                             fullWidth
                             InputProps={{
                                 disableUnderline: true,
-                                style: { color: "white", borderBottom: "1px solid white" },
                                 startAdornment: (
                                     <InputAdornment position="start">
                                         <EmailIcon sx={{ color: "white" }} />
                                     </InputAdornment>
                                 ),
                             }}
-                            InputLabelProps={{ style: { color: "white" } }}
+                            InputLabelProps={{
+                                sx: { color: "white" }
+                            }}
                             variant="standard"
+                            sx={{
+                                "& .MuiInputBase-root": {
+                                    color: "white",
+                                    borderBottom: "1px solid white",
+                                },
+                                "& .MuiInputBase-input": {
+                                    color: "white",
+                                    caretColor: "white",
+                                    backgroundColor: "transparent !important",
+                                },
+                                "& input:-webkit-autofill": {
+                                    WebkitBoxShadow: "0 0 0 1000px transparent inset !important",
+                                    WebkitTextFillColor: "white !important",
+                                    transition: "background-color 5000s ease-in-out 0s !important",
+                                    caretColor: "white !important",
+                                },
+                            }}
                         />
+
+
 
                         {feedbackMessage && (
                             <Typography
