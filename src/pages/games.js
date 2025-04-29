@@ -62,7 +62,7 @@ const Page = (props) => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  const getData = async () => {
+  const getMiscData = async () => {
     const instRes = await getInstitutions();
     if (instRes) setInstitutions(instRes);
 
@@ -72,9 +72,13 @@ const Page = (props) => {
     const questionRes = await getQuestions();
     if (questionRes) setQuestions(questionRes);
   };
-
+  const getData = async (search) => {
+    const res = await getGames(search);
+    if (res) setData(res);
+  };
   useEffect(() => {
-    getData();
+    getData("");
+    getMiscData();
   }, []);
 
   return (
@@ -120,8 +124,8 @@ const Page = (props) => {
                             try {
                               const res = await authenticatedAxios.post("/games/", v);
                               if (res.data.status) {
-                                await getData();
-                                props.closeDrawer();
+                                await getMiscData();
+                                props.closeModal();
                               }
                             } catch (e) {
                               console.error(e);
@@ -142,7 +146,8 @@ const Page = (props) => {
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search Games"
+                placeholder="Search Games By Name"
+                onChange={(e) => getData(e.target.value)}
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -221,8 +226,8 @@ const Page = (props) => {
                                 <Stack direction="row" spacing={1}>
                                   {Array.isArray(game.tags) && game.tags.length > 0
                                     ? game.tags.map((a, index) => (
-                                        <Chip key={index} label={a} color="primary" />
-                                      )) // ✅ Added key
+                                      <Chip key={index} label={a} color="primary" />
+                                    )) // ✅ Added key
                                     : "-"}
                                 </Stack>
                               </TableCell>
@@ -246,8 +251,8 @@ const Page = (props) => {
                                                   v
                                                 );
                                                 if (res.data.status) {
-                                                  await getData();
-                                                  props.closeDrawer();
+                                                  await getMiscData();
+                                                  props.closeModal();
                                                 }
                                               } catch (e) {
                                                 console.error(e);
@@ -278,7 +283,7 @@ const Page = (props) => {
                                               }
                                             );
                                             if (res.data.status) {
-                                              await getData();
+                                              await getMiscData();
                                               props.closeModal();
                                             }
                                           } catch (e) {
