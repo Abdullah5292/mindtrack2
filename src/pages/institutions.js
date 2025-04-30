@@ -77,7 +77,6 @@ const Page = (props) => {
     if (res) setData(res);
   };
 
-
   const [openModal, setOpenModal] = useState(false);
   const [selectedLogo, setSelectedLogo] = useState("");
 
@@ -121,7 +120,6 @@ const Page = (props) => {
       stream.on("error", reject);
     });
   };
-
 
   useEffect(() => {
     getData("");
@@ -169,8 +167,12 @@ const Page = (props) => {
                           title="Add Institution"
                           onSubmit={async (v) => {
                             try {
-                              if (uploadFile(v.logoFile)) {
-                                const res = await authenticatedAxios.post("/institutions/", v);
+                              const logoName = await uploadFile(v.logo);
+                              if (logoName) {
+                                const res = await authenticatedAxios.post("/institutions/", {
+                                  ...v,
+                                  logo: logoName,
+                                });
                                 if (res.data.status) {
                                   await getMiscData();
                                   props.closeModal();
@@ -309,7 +311,8 @@ const Page = (props) => {
                                             title="Edit Institution"
                                             onSubmit={async (v) => {
                                               try {
-                                                if (v.logoFile !== null && uploadFile(v.logoFile)) {
+                                                const logoName = await uploadFile(v.logo);
+                                                if (logoName) {
                                                   const res = await authenticatedAxios.put(
                                                     "/institutions/",
                                                     v
@@ -419,7 +422,6 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
       name: initialValues?.name || "",
       email: initialValues?.email || "",
       logo: initialValues?.logo || "",
-      logoFile: "" || null,
       typeId: initialValues?.typeId || "",
     },
     validationSchema: Yup.object({
@@ -430,14 +432,16 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
       email: Yup.string().email("Must be a valid email").max(255).required("Email is required"),
       logo: Yup.mixed()
         // .required('Logo is required')
-        .test('fileSize', 'File too large', value => !value || value.size <= 2 * 1024 * 1024)
-        .test('fileType', 'Unsupported file format', value => !value || ['image/jpeg', 'image/png'].includes(value.type)),
+        .test("fileSize", "File too large", (value) => !value || value.size <= 2 * 1024 * 1024)
+        .test(
+          "fileType",
+          "Unsupported file format",
+          (value) => !value || ["image/jpeg", "image/png"].includes(value.type)
+        ),
       typeId: Yup.number().required("Institution Type is required"),
     }),
     onSubmit,
   });
-
-
 
   return (
     <Box
@@ -526,11 +530,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                         <input
                           type="file"
                           name="logo"
-                          onChange={(event) => {
-                            const file = event.currentTarget.files[0];
-                            formik.setFieldValue("logo", file);
-                          }}
-                        // onBlur={() => formik.setFieldTouched("logo", true)}
+                          onChange={(event) =>
+                            formik.setFieldValue("logo", event.currentTarget.files[0])
+                          }
+                          // onBlur={() => formik.setFieldTouched("logo", true)}
                         />
 
                         {/* {formik.touched.logo && formik.errors.logo && (
@@ -581,8 +584,6 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                             <FormHelperText>{formik.errors.typeId}</FormHelperText>
                           )}
                         </FormControl>
-
-
                       </Grid>
                     </Grid>
                   </Box>
@@ -597,10 +598,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                       backgroundColor: "#601631",
                       color: "white",
                       padding: "10px 60px",
-                      '&:hover': { backgroundColor: '#4a1026' },
-                      '&:active': { backgroundColor: '#380c1c' },
-                      boxShadow: 'none',
-                      textTransform: 'none',
+                      "&:hover": { backgroundColor: "#4a1026" },
+                      "&:active": { backgroundColor: "#380c1c" },
+                      boxShadow: "none",
+                      textTransform: "none",
                     }}
                   >
                     Save details
@@ -612,6 +613,5 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
         </Stack>
       </Container>
     </Box>
-
   );
 };

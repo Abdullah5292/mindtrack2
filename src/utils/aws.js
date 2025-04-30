@@ -1,6 +1,7 @@
 import { NotificationManager } from "react-notifications";
 import AWS from "aws-sdk";
 import getConfig from "next/config";
+import { v4 as uuidv4 } from "uuid";
 
 const config = getConfig();
 
@@ -19,13 +20,15 @@ const s3 = new AWS.S3({
 
 export const uploadFile = async (file) => {
   try {
+    if (!file) throw new Error("invalid file");
+    const fileName = uuidv4();
     const params = {
       Bucket: S3_BUCKET,
-      Key: file.name,
+      Key: fileName,
       Body: file,
     };
     await s3.putObject(params).promise();
-    return true;
+    return fileName;
   } catch (e) {
     NotificationManager.error("could not upload file");
     console.error(e);

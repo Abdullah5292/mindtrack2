@@ -14,6 +14,7 @@ import store from "src/redux";
 import { createTheme } from "src/theme";
 import { createEmotionCache } from "src/utils/create-emotion-cache";
 import { NotificationContainer } from "react-notifications";
+import Loader from "src/components/loader";
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -38,6 +39,7 @@ const App = (props) => {
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <NotificationContainer />
+              <Loader />
               {getLayout(<Component {...pageProps} />)}
             </ThemeProvider>
           </LocalizationProvider>

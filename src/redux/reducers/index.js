@@ -5,6 +5,7 @@ import { persistReducer } from "redux-persist";
 
 // project import
 import user from "./user";
+import settings from "./settings";
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -14,5 +15,5 @@ const persistConfig = {
   timeout: 500,
 };
 
-const reducers = persistReducer(persistConfig, combineReducers({ user }));
+const reducers = persistReducer(persistConfig, combineReducers({ user, settings }));
 export default reducers;

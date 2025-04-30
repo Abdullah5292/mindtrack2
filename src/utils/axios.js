@@ -3,6 +3,7 @@ import { NotificationManager } from "react-notifications";
 
 import store from "src/redux";
 import getConfig from "next/config";
+import { setLoading } from "src/redux/reducers/settings";
 
 const config = getConfig();
 
@@ -11,6 +12,7 @@ const baseConfig = {
 };
 
 const onResponseSuccess = (response) => {
+  store.dispatch(setLoading(false));
   if (String(response.config.method).toUpperCase() !== "GET") {
     if (response.data.status) NotificationManager.success(response.data.message);
     else NotificationManager.error(response.data.message);
@@ -19,6 +21,7 @@ const onResponseSuccess = (response) => {
 };
 
 const onResponseError = (response) => {
+  store.dispatch(setLoading(false));
   if (String(response.config.method).toUpperCase() !== "GET") {
     if (response.response.data.status !== undefined)
       NotificationManager.error(response.response.data.message);
@@ -31,10 +34,12 @@ export const unauthenticatedAxios = axios.create(baseConfig);
 export const authenticatedAxios = axios.create(baseConfig);
 
 unauthenticatedAxios.interceptors.request.use((config) => {
+  store.dispatch(setLoading(true));
   return config;
 });
 
 authenticatedAxios.interceptors.request.use((config) => {
+  store.dispatch(setLoading(true));
   config.headers.Authorization = `Bearer ${store.getState().user?.token}`;
   return config;
 });

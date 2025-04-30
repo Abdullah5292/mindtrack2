@@ -226,7 +226,7 @@ const Page = (props) => {
                                               try {
                                                 const res = await authenticatedAxios.put(
                                                   "/roles/",
-                                                  { ...v, role_id: v.id }
+                                                  { ...v, roleId: v.id }
                                                 );
                                                 if (res.data.status) {
                                                   await getMiscData();
@@ -254,7 +254,7 @@ const Page = (props) => {
                                         onSubmit: async () => {
                                           try {
                                             const res = await authenticatedAxios.delete("/roles/", {
-                                              data: { role_id: role.id },
+                                              data: { roleId: role.id },
                                             });
                                             if (res.data.status) {
                                               await getMiscData();
