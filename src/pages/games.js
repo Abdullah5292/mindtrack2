@@ -242,15 +242,15 @@ const Page = (props) => {
                                         width: "30vw",
                                         body: (
                                           <DataForm
-                                            title="Edit Institution"
+                                            title="Edit Game"
                                             onSubmit={async (v) => {
                                               try {
                                                 const res = await authenticatedAxios.put(
-                                                  "/institutions/",
+                                                  "/games/",
                                                   v
                                                 );
                                                 if (res.data.status) {
-                                                  await getMiscData();
+                                                  await getData();
                                                   props.closeModal();
                                                 }
                                               } catch (e) {
@@ -276,7 +276,7 @@ const Page = (props) => {
                                         onSubmit: async () => {
                                           try {
                                             const res = await authenticatedAxios.delete(
-                                              "/institutions/",
+                                              "/games/",
                                               {
                                                 data: { institution_id: game.id },
                                               }
@@ -338,7 +338,18 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
       giveQuestions: initialValues?.giveQuestions || 0,
       time: initialValues?.time || 0,
     },
-    onSubmit,
+    onSubmit: async (values) => {
+      // Convert tags from string to array if necessary
+      const formattedValues = {
+        ...values,
+        tags: values.tags
+          .split(",")   // Split the string into an array
+          .map((tag) => tag.trim())  // Trim extra spaces
+          .filter(Boolean),  // Remove any empty strings
+      };
+      await onSubmit(formattedValues)
+    }
+
   });
   const [open, setOpen] = useState(false); // State for dialog box
 

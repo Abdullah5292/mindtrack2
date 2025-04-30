@@ -11,6 +11,7 @@ import {
   CardContent,
   CardHeader,
   Checkbox,
+  FormHelperText,
   Chip,
   Container,
   Divider,
@@ -48,6 +49,7 @@ import { authenticatedAxios } from "src/utils/axios";
 import { getInstitutions, getInstitutionTypes } from "src/utils/client";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
+import * as Yup from "yup";
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -255,18 +257,7 @@ const Page = (props) => {
                               <TableCell sx={{ color: "white" }}>{index + 1}</TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.name}</TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.email}</TableCell>
-                              {/* <TableCell sx={{ color: "white" }}> {console.log("Logo data:", institution.logo)}
-                              </TableCell> */}
-                              {/* View button for logo */}
                               <TableCell>
-                                {/* <Button
-                                  onClick={() => handleOpenModal(institution.getFile)}
-                                  variant="outlined"
-                                  sx={{ color: "white", borderColor: "white" }} // Makes text & border white
-                                >
-                                  View
-                                </Button> */}
-
                                 <Button
                                   disabled={institution.logo === ""}
                                   onClick={() => handleOpenModal(institution.logo)}
@@ -428,21 +419,26 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
       name: initialValues?.name || "",
       email: initialValues?.email || "",
       logo: initialValues?.logo || "",
-      logoFile: null,
-      typeId: initialValues?.typeId || 0,
+      logoFile: "" || null,
+      typeId: initialValues?.typeId || "",
     },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .matches(/^[A-Za-z\s]+$/, "Name can only contain letters and spaces") // Regex to allow only letters and spaces
+        .max(255, "Name is too long")
+        .required("Name is required"),
+      email: Yup.string().email("Must be a valid email").max(255).required("Email is required"),
+      logo: Yup.mixed()
+        // .required('Logo is required')
+        .test('fileSize', 'File too large', value => !value || value.size <= 2 * 1024 * 1024)
+        .test('fileType', 'Unsupported file format', value => !value || ['image/jpeg', 'image/png'].includes(value.type)),
+      typeId: Yup.number().required("Institution Type is required"),
+    }),
     onSubmit,
   });
 
-  const handleFileChange = (e) => {
-    const og = e.target.files[0];
-    if (og) {
-      const newName = crypto.randomUUID();
-      const newFile = new File([og], newName, { type: og.type, lastModified: og.lastModified });
-      formik.setFieldValue("logo", newName);
-      formik.setFieldValue("logoFile", newFile);
-    }
-  };
+
+
   return (
     <Box
       component="main"
@@ -473,14 +469,18 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                 <CardContent sx={{ pt: 0 }}>
                   <Box sx={{ m: -1.5 }}>
                     <Grid container spacing={2}>
+                      {/* Name Field */}
                       <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Name"
                           name="name"
                           onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
                           required
                           value={formik.values.name}
+                          error={formik.touched.name && Boolean(formik.errors.name)}
+                          helperText={formik.touched.name && formik.errors.name}
                           sx={{
                             "& label.Mui-focused": { color: "#601631" },
                             "& .MuiOutlinedInput-root": {
@@ -491,14 +491,19 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                           }}
                         />
                       </Grid>
+
+                      {/* Email Field */}
                       <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Email Address"
                           name="email"
                           onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
                           required
                           value={formik.values.email}
+                          error={formik.touched.email && Boolean(formik.errors.email)}
+                          helperText={formik.touched.email && formik.errors.email}
                           sx={{
                             "& label.Mui-focused": { color: "#601631" },
                             "& .MuiOutlinedInput-root": {
@@ -509,7 +514,8 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                           }}
                         />
                       </Grid>
-                      {/* Logo Section */}
+
+                      {/* Logo Upload */}
                       <Grid item xs={12}>
                         <Typography
                           variant="subtitle1"
@@ -517,14 +523,30 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                         >
                           Logo
                         </Typography>
-                        <FormControl fullWidth sx={{ mt: 1, mb: 2 }}>
+                        <input
+                          type="file"
+                          name="logo"
+                          onChange={(event) => {
+                            const file = event.currentTarget.files[0];
+                            formik.setFieldValue("logo", file);
+                          }}
+                        // onBlur={() => formik.setFieldTouched("logo", true)}
+                        />
+
+                        {/* {formik.touched.logo && formik.errors.logo && (
+                          <FormHelperText error>{formik.errors.logo}</FormHelperText>
+                        )} */}
+
+                        {/* <FormControl fullWidth sx={{ mt: 1, mb: 2 }}>
                           <input type="file" onChange={handleFileChange} />
-                        </FormControl>
+                        </FormControl> */}
                       </Grid>
-                      {/* Institution Type */}
+
+                      {/* Institution Type Dropdown */}
                       <Grid item xs={12}>
                         <FormControl
                           fullWidth
+                          error={Boolean(formik.touched.typeId && formik.errors.typeId)}
                           sx={{
                             "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
                             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
@@ -539,23 +561,34 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                           <Select
                             fullWidth
                             labelId="label-type"
-                            label="Select Type"
+                            id="typeId"
                             name="typeId"
-                            onChange={formik.handleChange}
-                            required
+                            label="Institution Type"
                             value={formik.values.typeId}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur} // CRITICAL LINE
                           >
+                            <MenuItem value="">
+                              <em>Select one</em>
+                            </MenuItem>
                             {institutionTypes.map((option) => (
                               <MenuItem key={option.id} value={option.id}>
                                 {option.type}
                               </MenuItem>
                             ))}
                           </Select>
+                          {formik.touched.typeId && formik.errors.typeId && (
+                            <FormHelperText>{formik.errors.typeId}</FormHelperText>
+                          )}
                         </FormControl>
+
+
                       </Grid>
                     </Grid>
                   </Box>
                 </CardContent>
+
+                {/* Submit Button */}
                 <CardActions sx={{ justifyContent: "center" }}>
                   <Button
                     variant="contained"
@@ -564,19 +597,14 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                       backgroundColor: "#601631",
                       color: "white",
                       padding: "10px 60px",
-                      '&:hover': {
-                        backgroundColor: '#4a1026', // darker shade on hover
-                      },
-                      '&:active': {
-                        backgroundColor: '#380c1c', // even darker on click
-                      },
-                      boxShadow: 'none', // optional: remove default MUI shadow
-                      textTransform: 'none', // optional: prevent all-uppercase text
+                      '&:hover': { backgroundColor: '#4a1026' },
+                      '&:active': { backgroundColor: '#380c1c' },
+                      boxShadow: 'none',
+                      textTransform: 'none',
                     }}
                   >
                     Save details
                   </Button>
-
                 </CardActions>
               </div>
             </form>
@@ -584,5 +612,6 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
         </Stack>
       </Container>
     </Box>
+
   );
 };

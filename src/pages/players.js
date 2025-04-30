@@ -93,7 +93,7 @@ const Page = (props) => {
         component="main"
         sx={{
           flexGrow: 1,
-          py: 8,
+          py: 5,
         }}
       >
         <Container maxWidth="xl">
@@ -233,28 +233,9 @@ const Page = (props) => {
                                     });
                                   }}
                                 >
-                                  Edit
+                                  View Stats
                                 </Button>
-                                <Button
-                                  color="error"
-                                  onClick={() => {
-                                    props.openModal({
-                                      showSubmit: true,
-                                      showCancel: true,
-                                      onSubmit: async () => {
-                                        const res = await authenticatedAxios.delete("/users/", {
-                                          data: { user_id: user.id },
-                                        });
-                                        if (res.data.status) {
-                                          await getData();
-                                          props.closeModal();
-                                        }
-                                      },
-                                    });
-                                  }}
-                                >
-                                  Delete
-                                </Button>
+
                               </ButtonGroup>
                             </TableCell>
                           </TableRow>

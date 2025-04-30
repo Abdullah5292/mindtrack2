@@ -1,5 +1,6 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import { CircularProgress } from "@mui/material";
 
 import {
   Avatar,
@@ -27,6 +28,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  FormHelperText,
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
@@ -42,6 +44,7 @@ import { getInitials } from "src/utils/get-initials";
 import { hasPermission } from "src/utils/utils";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
+import * as Yup from "yup";
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -75,6 +78,17 @@ const Page = (props) => {
     getData("");
     getMiscData();
   }, []);
+
+  // function MyForm() {
+  //   const formik = useFormik({
+  //     initialValues: {
+  //       name: "",
+  //     },
+  //     validationSchema, // Using Yup validation schema
+  //     onSubmit: (values) => {
+  //       console.log(values);
+  //     },
+  //   });
 
   return (
     <div className="flex flex-col w-full h-full relative">
@@ -124,12 +138,14 @@ const Page = (props) => {
                       body: (
                         <DataForm
                           title="Add User"
+                          handleClose={props.closeDrawer}
+
                           onSubmit={async (v) => {
                             try {
                               const res = await authenticatedAxios.post("/users/", v);
 
                               if (res.data.status) {
-                                await getData();
+                                await getData("");
                                 props.closeDrawer();
                               }
                             } catch (e) {
@@ -249,6 +265,8 @@ const Page = (props) => {
                                       body: (
                                         <DataForm
                                           title="Edit User"
+                                          handleClose={props.closeDrawer}
+
                                           onSubmit={async (v) => {
                                             console.log("Submitting data:", v); // Debugging
 
@@ -259,14 +277,10 @@ const Page = (props) => {
                                               );
                                               console.log("Response:", res.data); // Debugging
 
-                                              if (res.data?.status) {
-                                                console.log(
-                                                  "Update successful, fetching new data..."
-                                                );
 
-                                                // Wait for data to refresh before closing drawer
-                                                await getData();
-                                                console.log("Fetched updated users");
+                                              if (res.data.status) {
+                                                await getData("");
+                                                props.closeDrawer();
                                               } else {
                                                 console.error("Update failed:", res.data);
                                               }
@@ -318,7 +332,7 @@ const Page = (props) => {
                                           data: { user_id: user.id },
                                         });
                                         if (res.data.status) {
-                                          await getMiscData();
+                                          await getData();
                                           props.closeModal();
                                         }
                                       },
@@ -357,17 +371,36 @@ const ModalWrapped = WithModal(Page);
 const DrawerWrapped = WithDrawer(ModalWrapped);
 DrawerWrapped.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 export default DrawerWrapped;
-const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles = [] }) => {
+const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles = [], handleClose }) => {
   const formik = useFormik({
     initialValues: {
       id: initialValues?.id || 0,
       email: initialValues?.email || "",
       name: initialValues?.name || "",
-      password: initialValues?.password || "",
       institutionId: initialValues?.institutionId || 0,
       roleId: initialValues?.roleId || 0,
     },
-    onSubmit,
+    validationSchema: Yup.object({
+      email: Yup.string().email("Must be a valid email").max(255).required("Email is required"),
+      name: Yup.string()
+        .matches(/^[A-Za-z\s]+$/, "Name can only contain letters and spaces")
+        .max(255, "Name is too long")
+        .required("Name is required"),
+      institutionId: Yup.number().required("Institution is required"),
+      roleId: Yup.number().required("Role is required"),
+    }),
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const res = await onSubmit(values); // await outer submit
+        if (res?.status && handleClose) {
+          handleClose(); // ✅ auto-close drawer after success
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+      } finally {
+        setSubmitting(false);
+      }
+    }
   });
 
   return (
@@ -406,8 +439,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                           label="Name"
                           name="name"
                           onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
                           required
                           value={formik.values.name}
+                          error={formik.touched.name && Boolean(formik.errors.name)}
+                          helperText={formik.touched.name && formik.errors.name}
                           sx={{
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": { borderColor: "#601631" },
@@ -430,8 +466,11 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                           label="Email Address"
                           name="email"
                           onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
                           required
                           value={formik.values.email}
+                          error={formik.touched.email && Boolean(formik.errors.email)}
+                          helperText={formik.touched.email && formik.errors.email}
                           sx={{
                             "& .MuiOutlinedInput-root": {
                               "& fieldset": { borderColor: "#601631" },
@@ -457,32 +496,54 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
 
                       </Grid>
                       <Grid item xs={12}>
-                        {/* <TextField
-                          fullWidth
-                          label="Password"
-                          name="password"
-                          type="password"
-                          onChange={formik.handleChange}
-                          required
-                          value={formik.values.password}
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": { borderColor: "#601631" },
-                              "&:hover fieldset": { borderColor: "#601631" },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#601631",
-                                borderWidth: "2px",
-                              },
-                            },
-                            "& .MuiInputBase-input": {
-                              fontWeight: "normal",
-                              "&:focus": { fontWeight: "bold" },
-                            },
-                          }}
-                        /> */}
+
                       </Grid>
                       <Grid item xs={12}>
-                        <FormControl fullWidth>
+                        <FormControl
+                          fullWidth
+                          error={formik.touched.institutionId && Boolean(formik.errors.institutionId)}
+                          sx={{
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                          }}
+                        >
+                          <InputLabel id="label-institution" sx={{ color: "#601631" }}>
+                            Institution
+                          </InputLabel>
+                          <Select
+                            labelId="label-institution"
+                            id="institutionId"
+                            name="institutionId"
+                            label="Institution"
+                            value={formik.values.institutionId}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                          >
+                            <MenuItem value="">
+                              <em>Select Institution</em>
+                            </MenuItem>
+                            {institutions.map((option) => (
+                              <MenuItem key={option.id} value={option.id}>
+                                {option.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          {formik.touched.institutionId && formik.errors.institutionId && (
+                            <FormHelperText>{formik.errors.institutionId}</FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+                      {/* <Grid item xs={12}>
+                        <FormControl
+                          fullWidth
+                          error={formik.touched.institutionId && Boolean(formik.errors.institutionId)}
+                          sx={{
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                          }}
+                        >
                           <InputLabel id="label-institution">Institution</InputLabel>
                           <Select
                             fullWidth
@@ -514,41 +575,45 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             ))}
                           </Select>
                         </FormControl>
-                      </Grid>
+                      </Grid> */}
+
                       <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id="label-role">Role</InputLabel>
+                        <FormControl
+                          fullWidth
+                          error={formik.touched.roleId && Boolean(formik.errors.roleId)}
+                          sx={{
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
+                          }}
+                        >
+                          <InputLabel id="label-role" sx={{ color: "#601631" }}>
+                            Role
+                          </InputLabel>
                           <Select
-                            fullWidth
                             labelId="label-role"
-                            label="Select Role"
+                            id="roleId"
                             name="roleId"
-                            onChange={formik.handleChange}
-                            required
+                            label="Role"
                             value={formik.values.roleId}
-                            sx={{
-                              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#601631" },
-                              "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#601631",
-                              },
-                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#601631",
-                                borderWidth: "2px",
-                              },
-                              "& .MuiSelect-select": {
-                                fontWeight: "normal",
-                                "&:focus": { fontWeight: "bold" },
-                              },
-                            }}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           >
+                            <MenuItem value="">
+                              <em>Select Role</em>
+                            </MenuItem>
                             {roles.map((option) => (
                               <MenuItem key={option.id} value={option.id}>
                                 {option.name}
                               </MenuItem>
                             ))}
                           </Select>
+                          {formik.touched.roleId && formik.errors.roleId && (
+                            <FormHelperText>{formik.errors.roleId}</FormHelperText>
+                          )}
                         </FormControl>
                       </Grid>
+
                     </Grid>
                   </Box>
                 </CardContent>
@@ -556,29 +621,36 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                   <Button
                     variant="contained"
                     type="submit"
+                    disabled={formik.isSubmitting}
                     sx={{
                       backgroundColor: "#601631",
                       color: "white",
                       padding: "10px 60px",
                       '&:hover': {
-                        backgroundColor: '#4a1026', // darker shade on hover
+                        backgroundColor: '#4a1026',
                       },
                       '&:active': {
-                        backgroundColor: '#380c1c', // even darker on click
+                        backgroundColor: '#380c1c',
                       },
-                      boxShadow: 'none', // optional: remove default MUI shadow
-                      textTransform: 'none', // optional: prevent all-uppercase text
+                      boxShadow: 'none',
+                      textTransform: 'none',
+                      position: 'relative',
                     }}
                   >
-                    Save details
+                    {formik.isSubmitting ? (
+                      <CircularProgress size={24} sx={{ color: 'white' }} />
+                    ) : (
+                      "Save details"
+                    )}
                   </Button>
+
 
                 </CardActions>
               </div>
             </form>
           </div>
         </Stack>
-      </Container>
-    </Box>
+      </Container >
+    </Box >
   );
 };
