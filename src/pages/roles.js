@@ -95,7 +95,7 @@ const Page = (props) => {
               </Stack>
               <div>
                 <Button
-                  disabled={!hasPermission("roles-add")}
+                  disabled={!hasPermission("role-add")}
 
                   startIcon={
                     <SvgIcon fontSize="small">
@@ -219,7 +219,7 @@ const Page = (props) => {
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
-                                    disabled={!hasPermission("roles-edit")}
+                                    disabled={!hasPermission("role-edit")}
                                     color="warning"
                                     onClick={() => {
                                       props.openDrawer({
@@ -254,7 +254,7 @@ const Page = (props) => {
                                     Edit
                                   </Button>
                                   <Button
-                                    disabled={!hasPermission("roles-delete")}
+                                    disabled={!hasPermission("role-delete")}
 
                                     color="error"
                                     onClick={() => {

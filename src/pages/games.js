@@ -110,7 +110,7 @@ const Page = (props) => {
               </Stack>
               <div>
                 <Button
-                  disabled={!hasPermission("games-add")}
+                  disabled={!hasPermission("game-add")}
 
                   startIcon={
                     <SvgIcon fontSize="small">
@@ -245,7 +245,7 @@ const Page = (props) => {
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
-                                    disabled={!hasPermission("games-edit")}
+                                    disabled={!hasPermission("game-edit")}
                                     color="warning"
                                     onClick={() => {
                                       props.openDrawer({
@@ -277,7 +277,7 @@ const Page = (props) => {
                                   </Button>
 
                                   <Button
-                                    disabled={!hasPermission("games-delete")}
+                                    disabled={!hasPermission("game-delete")}
                                     color="error"
                                     onClick={() => {
                                       props.openModal({

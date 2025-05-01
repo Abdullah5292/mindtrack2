@@ -177,7 +177,7 @@ const Page = (props) => {
               </Stack>
               <div>
                 <Button
-                  disabled={!hasPermission("institution-add")}
+                  disabled={!hasPermission("institutions-add")}
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -378,7 +378,7 @@ const Page = (props) => {
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
-                                    disabled={!hasPermission("institution-edit")}
+                                    disabled={!hasPermission("institutions-edit")}
                                     color="warning"
                                     onClick={() => {
                                       props.openDrawer({
@@ -422,7 +422,7 @@ const Page = (props) => {
                                     Edit
                                   </Button>
                                   <Button
-                                    disabled={!hasPermission("institution-delete")}
+                                    disabled={!hasPermission("institutions-delete")}
 
                                     color="error"
                                     onClick={() => {
