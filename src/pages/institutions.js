@@ -1,6 +1,7 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { Buffer } from "buffer";
+import { CircularProgress } from "@mui/material";
 import {
   Box,
   Modal,
@@ -533,7 +534,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                           onChange={(event) =>
                             formik.setFieldValue("logo", event.currentTarget.files[0])
                           }
-                          // onBlur={() => formik.setFieldTouched("logo", true)}
+                        // onBlur={() => formik.setFieldTouched("logo", true)}
                         />
 
                         {/* {formik.touched.logo && formik.errors.logo && (
@@ -594,18 +595,39 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                   <Button
                     variant="contained"
                     type="submit"
+                    disabled={formik.isSubmitting}
                     sx={{
                       backgroundColor: "#601631",
                       color: "white",
                       padding: "10px 60px",
-                      "&:hover": { backgroundColor: "#4a1026" },
-                      "&:active": { backgroundColor: "#380c1c" },
-                      boxShadow: "none",
-                      textTransform: "none",
+                      '&:hover': {
+                        backgroundColor: '#4a1026',
+                      },
+                      '&:active': {
+                        backgroundColor: '#380c1c',
+                      },
+                      boxShadow: 'none',
+                      textTransform: 'none',
+                      position: 'relative',
                     }}
                   >
-                    Save details
+                    {formik.isSubmitting ? (
+                      <CircularProgress
+                        size={24}
+                        sx={{
+                          color: 'white',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)', // Center the loader
+                          zIndex: 1300, // Higher z-index to make sure it appears above other components
+                        }}
+                      />
+                    ) : (
+                      "Save details"
+                    )}
                   </Button>
+
                 </CardActions>
               </div>
             </form>

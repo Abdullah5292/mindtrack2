@@ -377,8 +377,8 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
       id: initialValues?.id || 0,
       email: initialValues?.email || "",
       name: initialValues?.name || "",
-      institutionId: initialValues?.institutionId || 0,
-      roleId: initialValues?.roleId || 0,
+      institutionId: initialValues?.institutionId || "",
+      roleId: initialValues?.roleId || "",
     },
     validationSchema: Yup.object({
       email: Yup.string().email("Must be a valid email").max(255).required("Email is required"),
@@ -498,6 +498,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                       <Grid item xs={12}>
 
                       </Grid>
+
                       <Grid item xs={12}>
                         <FormControl
                           fullWidth
@@ -516,7 +517,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             id="institutionId"
                             name="institutionId"
                             label="Institution"
-                            value={formik.values.institutionId}
+                            value={formik.values.institutionId}  // Formik value handling
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                           >
@@ -597,8 +598,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                             label="Role"
                             value={formik.values.roleId}
                             onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          >
+                            onBlur={formik.handleBlur}>
                             <MenuItem value="">
                               <em>Select Role</em>
                             </MenuItem>
@@ -638,7 +638,17 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                     }}
                   >
                     {formik.isSubmitting ? (
-                      <CircularProgress size={24} sx={{ color: 'white' }} />
+                      <CircularProgress
+                        size={24}
+                        sx={{
+                          color: 'white',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)', // Center the loader
+                          zIndex: 1300, // Higher z-index to make sure it appears above other components
+                        }}
+                      />
                     ) : (
                       "Save details"
                     )}

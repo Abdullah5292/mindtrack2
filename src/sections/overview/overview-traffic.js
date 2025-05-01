@@ -85,8 +85,8 @@ export const OverviewTraffic = (props) => {
   const chartOptions = useChartOptions(labels);
 
   return (
-    <Card sx={sx}>
-      <CardHeader title="Traffic Source" />
+    <Card sx={{ ...sx, backgroundColor: '#000000', color: '#ffffff' }}> {/* Set Card background to black and text to white */}
+      <CardHeader title="Traffic Source" sx={{ color: '#ffffff' }} /> {/* Ensure CardHeader text is white */}
       <CardContent>
         <Chart
           height={300}
@@ -116,12 +116,13 @@ export const OverviewTraffic = (props) => {
               >
                 {iconMap[label]}
                 <Typography
-                  sx={{ my: 1 }}
+                  sx={{ my: 1, color: '#ffffff' }} // Set label text color to white
                   variant="h6"
                 >
                   {label}
                 </Typography>
                 <Typography
+                  sx={{ color: '#ffffff' }} // Set percentage text color to white
                   color="text.secondary"
                   variant="subtitle2"
                 >

@@ -24,7 +24,7 @@ const useChartOptions = () => {
         show: false
       }
     },
-    colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.25)],
+    colors: ['#6a0dad', '#000000'], // Purple and black colors
     dataLabels: {
       enabled: false
     },
@@ -33,7 +33,7 @@ const useChartOptions = () => {
       type: 'solid'
     },
     grid: {
-      borderColor: theme.palette.divider,
+      borderColor: '#e0e0e0', // Light gray for grid lines
       strokeDashArray: 2,
       xaxis: {
         lines: {
@@ -64,31 +64,20 @@ const useChartOptions = () => {
     },
     xaxis: {
       axisBorder: {
-        color: theme.palette.divider,
+        color: '#6a0dad', // Purple border for the axis
         show: true
       },
       axisTicks: {
-        color: theme.palette.divider,
+        color: '#6a0dad', // Purple ticks
         show: true
       },
       categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ],
       labels: {
         offsetY: 5,
         style: {
-          colors: theme.palette.text.secondary
+          colors: '#000000' // Black color for labels
         }
       }
     },
@@ -97,7 +86,7 @@ const useChartOptions = () => {
         formatter: (value) => (value > 0 ? `${value}K` : `${value}`),
         offsetX: -10,
         style: {
-          colors: theme.palette.text.secondary
+          colors: '#000000' // Black color for y-axis labels
         }
       }
     }
@@ -109,7 +98,7 @@ export const OverviewSales = (props) => {
   const chartOptions = useChartOptions();
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, backgroundColor: '#000000' }}> {/* Black background for the Card */}
       <CardHeader
         action={(
           <Button
@@ -125,6 +114,7 @@ export const OverviewSales = (props) => {
           </Button>
         )}
         title="Sales"
+        sx={{ color: '#ffffff' }}
       />
       <CardContent>
         <Chart
@@ -135,7 +125,7 @@ export const OverviewSales = (props) => {
           width="100%"
         />
       </CardContent>
-      <Divider />
+      <Divider sx={{ backgroundColor: '#6a0dad' }} /> {/* Purple divider */}
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           color="inherit"
@@ -145,6 +135,7 @@ export const OverviewSales = (props) => {
             </SvgIcon>
           )}
           size="small"
+          sx={{ color: '#ffffff' }}
         >
           Overview
         </Button>
@@ -153,7 +144,7 @@ export const OverviewSales = (props) => {
   );
 };
 
-OverviewSales.protoTypes = {
+OverviewSales.propTypes = {
   chartSeries: PropTypes.array.isRequired,
   sx: PropTypes.object
 };

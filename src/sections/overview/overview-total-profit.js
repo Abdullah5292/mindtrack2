@@ -6,7 +6,7 @@ export const OverviewTotalProfit = (props) => {
   const { value, sx } = props;
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, backgroundColor: '#000000' }}> {/* Set Card background to black */}
       <CardContent>
         <Stack
           alignItems="flex-start"
@@ -21,7 +21,7 @@ export const OverviewTotalProfit = (props) => {
             >
               Total Profit
             </Typography>
-            <Typography variant="h4">
+            <Typography variant="h4" sx={{ color: '#ffffff' }}> {/* Set text color to white */}
               {value}
             </Typography>
           </Stack>

@@ -8,7 +8,7 @@ export const OverviewTotalCustomers = (props) => {
   const { difference, positive = false, sx, value } = props;
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, backgroundColor: '#000000' }}> {/* Set Card background to black */}
       <CardContent>
         <Stack
           alignItems="flex-start"
@@ -23,7 +23,7 @@ export const OverviewTotalCustomers = (props) => {
             >
               Total Customers
             </Typography>
-            <Typography variant="h4">
+            <Typography variant="h4" sx={{ color: '#ffffff' }}> {/* Set text color to white */}
               {value}
             </Typography>
           </Stack>
@@ -83,4 +83,3 @@ OverviewTotalCustomers.propTypes = {
   value: PropTypes.string.isRequired,
   sx: PropTypes.object
 };
-
