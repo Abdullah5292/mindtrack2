@@ -119,48 +119,49 @@ const Page = (props) => {
                 </Typography>
               </Stack>
               <div>
-                <Button
-                  disabled={!hasPermission("user-add")}
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#24A374",
-                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
-                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
-                  }}
-                  onClick={() => {
-                    props.openDrawer({
-                      width: "30vw",
-                      body: (
-                        <DataForm
-                          title="Add User"
-                          handleClose={props.closeDrawer}
+                {hasPermission("user-add") && (
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#24A374",
+                      "&:hover": { backgroundColor: "#1E8A63" },
+                      "&:active": { backgroundColor: "#1B7B58" },
+                    }}
+                    onClick={() => {
+                      props.openDrawer({
+                        width: "30vw",
+                        body: (
+                          <DataForm
+                            title="Add User"
+                            handleClose={props.closeDrawer}
+                            onSubmit={async (v) => {
+                              try {
+                                const res = await authenticatedAxios.post("/users/", v);
 
-                          onSubmit={async (v) => {
-                            try {
-                              const res = await authenticatedAxios.post("/users/", v);
-
-                              if (res.data.status) {
-                                await getData("");
-                                props.closeDrawer();
+                                if (res.data.status) {
+                                  await getData("");
+                                  props.closeDrawer();
+                                }
+                              } catch (e) {
+                                console.error(e);
                               }
-                            } catch (e) {
-                              console.error(e);
-                            }
-                          }}
-                          institutions={institutions}
-                          roles={roles}
-                        />
-                      ),
-                    });
-                  }}
-                >
-                  Add User
-                </Button>
+                            }}
+                            institutions={institutions}
+                            roles={roles}
+                          />
+                        ),
+                      });
+                    }}
+                  >
+                    Add User
+                  </Button>
+                )}
+
               </div>
             </Stack>
             <Card sx={{ p: 2, backgroundColor: "white" }}>
@@ -255,93 +256,76 @@ const Page = (props) => {
                               {moment(user.createdAt).toLocaleString()}
                             </TableCell>
                             <TableCell>
-                              <ButtonGroup variant="contained">
-                                <Button
-                                  disabled={!hasPermission("user-edit")}
-                                  color="warning"
-                                  onClick={() => {
-                                    props.openDrawer({
-                                      width: "30vw",
-                                      body: (
-                                        <DataForm
-                                          title="Edit User"
-                                          handleClose={props.closeDrawer}
+                              {hasPermission("user-edit") || hasPermission("user-delete") ? (
+                                <ButtonGroup variant="contained" fullWidth>
+                                  {hasPermission("user-edit") && (
+                                    <Button
+                                      color="warning"
+                                      disabled={!hasPermission("user-edit")}
+                                      onClick={() => {
+                                        props.openDrawer({
+                                          width: "30vw",
+                                          body: (
+                                            <DataForm
+                                              title="Edit User"
+                                              handleClose={props.closeDrawer}
+                                              onSubmit={async (v) => {
+                                                console.log("Submitting data:", v); // Debugging
 
-                                          onSubmit={async (v) => {
-                                            console.log("Submitting data:", v); // Debugging
+                                                try {
+                                                  const res = await authenticatedAxios.put("/users/", v);
+                                                  console.log("Response:", res.data); // Debugging
 
-                                            try {
-                                              const res = await authenticatedAxios.put(
-                                                "/users/",
-                                                v
-                                              );
-                                              console.log("Response:", res.data); // Debugging
+                                                  if (res.data.status) {
+                                                    await getData("");
+                                                    props.closeDrawer();
+                                                  } else {
+                                                    console.error("Update failed:", res.data);
+                                                  }
+                                                } catch (e) {
+                                                  console.error("Error updating user:", e);
+                                                }
+                                              }}
+                                              initialValues={user}
+                                              institutions={institutions}
+                                              roles={roles}
+                                            />
+                                          ),
+                                        });
+                                      }}
+                                      fullWidth={!hasPermission("user-delete")} // If "Delete" is hidden, take full width
+                                    >
+                                      Edit
+                                    </Button>
+                                  )}
 
-
-                                              if (res.data.status) {
-                                                await getData("");
-                                                props.closeDrawer();
-                                              } else {
-                                                console.error("Update failed:", res.data);
-                                              }
-                                            } catch (e) {
-                                              console.error("Error updating user:", e);
+                                  {hasPermission("user-delete") && (
+                                    <Button
+                                      color="error"
+                                      disabled={!hasPermission("user-delete")}
+                                      onClick={() => {
+                                        props.openModal({
+                                          showSubmit: true,
+                                          showCancel: true,
+                                          onSubmit: async () => {
+                                            const res = await authenticatedAxios.delete("/users/", {
+                                              data: { user_id: user.id },
+                                            });
+                                            if (res.data.status) {
+                                              await getData();
+                                              props.closeModal();
                                             }
-                                          }}
-                                          initialValues={user}
-                                          institutions={institutions}
-                                          roles={roles}
-                                        />
-                                      ),
-                                    });
-                                  }}
-                                >
-                                  Edit
-                                </Button>
-
-                                {/* <Button
-                                  color="error"
-                                  onClick={() => {
-                                    props.openModal({
-                                      showSubmit: true,
-                                      showCancel: true,
-                                      onSubmit: async () => {
-                                        const res = await authenticatedAxios.delete("/users/", {
-                                          data: { user_id: user.id },
+                                          },
                                         });
-                                        if (res.data.status) {
-                                          await getData();
-                                          props.closeModal();
-                                        }
-                                      },
-                                    });
-                                  }}
-                                >
-                                  Delete
-                                </Button> */}
+                                      }}
+                                      fullWidth={!hasPermission("user-edit")} // If "Edit" is hidden, take full width
+                                    >
+                                      Delete
+                                    </Button>
+                                  )}
+                                </ButtonGroup>
+                              ) : null}
 
-                                <Button
-                                  color="error"
-                                  disabled={!hasPermission("user-delete")}
-                                  onClick={() => {
-                                    props.openModal({
-                                      showSubmit: true,
-                                      showCancel: true,
-                                      onSubmit: async () => {
-                                        const res = await authenticatedAxios.delete("/users/", {
-                                          data: { user_id: user.id },
-                                        });
-                                        if (res.data.status) {
-                                          await getData();
-                                          props.closeModal();
-                                        }
-                                      },
-                                    });
-                                  }}
-                                >
-                                  Delete
-                                </Button>
-                              </ButtonGroup>
                             </TableCell>
                           </TableRow>
                         ))}

@@ -176,53 +176,54 @@ const Page = (props) => {
                 </Typography>
               </Stack>
               <div>
-                <Button
-                  disabled={!hasPermission("institutions-add")}
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#24A374",
-                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
-                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
-                  }}
-                  onClick={() => {
-                    props.openDrawer({
-                      width: "30vw",
-                      body: (
-                        <DataForm
-                          title="Add Institution"
-                          handleClose={props.closeDrawer}
+                {hasPermission("institutions-add") && (
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#24A374",
+                      "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
+                      "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
+                    }}
+                    onClick={() => {
+                      props.openDrawer({
+                        width: "30vw",
+                        body: (
+                          <DataForm
+                            title="Add Institution"
+                            handleClose={props.closeDrawer}
+                            onSubmit={async (v) => {
+                              try {
+                                const result = await uploadFile(v.logo);
 
-                          onSubmit={async (v) => {
-                            try {
-                              const result = await uploadFile(v.logo);
-
-                              if (result.success) {
-                                const res = await authenticatedAxios.post("/institutions/", {
-                                  ...v,
-                                  logo: result.fileName, // ✅ use only the string
-                                });
-                                if (res.data.status) {
-                                  await getMiscData();
-                                  props.closeDrawer();
+                                if (result.success) {
+                                  const res = await authenticatedAxios.post("/institutions/", {
+                                    ...v,
+                                    logo: result.fileName, // Only use the file name
+                                  });
+                                  if (res.data.status) {
+                                    await getMiscData();
+                                    props.closeDrawer();
+                                  }
                                 }
+                              } catch (e) {
+                                console.error(e);
                               }
-                            } catch (e) {
-                              console.error(e);
-                            }
-                          }}
-                          institutionTypes={institutionTypes}
-                        />
-                      ),
-                    });
-                  }}
-                >
-                  Add Institution
-                </Button>
+                            }}
+                            institutionTypes={institutionTypes}
+                          />
+                        ),
+                      });
+                    }}
+                  >
+                    Add Institution
+                  </Button>
+                )}
+
               </div>
             </Stack>
             <Card sx={{ p: 2, backgroundColor: "white" }}>
@@ -376,81 +377,81 @@ const Page = (props) => {
                                 {moment(institution.createdAt).toLocaleString()}
                               </TableCell>
                               <TableCell>
-                                <ButtonGroup variant="contained">
-                                  <Button
-                                    disabled={!hasPermission("institutions-edit")}
-                                    color="warning"
-                                    onClick={() => {
-                                      props.openDrawer({
-                                        width: "30vw",
-                                        body: (
-                                          <DataForm
-                                            title="Edit Institution"
-                                            handleClose={props.closeDrawer}
+                                {hasPermission("institutions-edit") || hasPermission("institutions-delete") ? (
+                                  <ButtonGroup variant="contained" fullWidth>
+                                    {hasPermission("institutions-edit") && (
+                                      <Button
+                                        color="warning"
+                                        onClick={() => {
+                                          props.openDrawer({
+                                            width: "30vw",
+                                            body: (
+                                              <DataForm
+                                                title="Edit Institution"
+                                                handleClose={props.closeDrawer}
+                                                onSubmit={async (v) => {
+                                                  try {
+                                                    const result = await uploadFile(v.logo);
 
+                                                    if (result.success) {
+                                                      const payload = {
+                                                        ...v,
+                                                        logo: result.fileName,
+                                                      };
 
+                                                      const res = await authenticatedAxios.put("/institutions/", payload);
 
-                                            onSubmit={async (v) => {
-                                              try {
-                                                const result = await uploadFile(v.logo);
-
-                                                if (result.success) {
-                                                  const payload = {
-                                                    ...v,
-                                                    logo: result.fileName, // correctly attach logo
-                                                  };
-
-                                                  const res = await authenticatedAxios.put("/institutions/", payload);
-
-                                                  if (res.data.status) {
-                                                    await getMiscData();
-                                                    props.closeDrawer();
+                                                      if (res.data.status) {
+                                                        await getMiscData();
+                                                        props.closeDrawer();
+                                                      }
+                                                    }
+                                                  } catch (e) {
+                                                    console.error(e);
                                                   }
+                                                }}
+                                                initialValues={institution}
+                                                institutionTypes={institutionTypes}
+                                              />
+                                            ),
+                                          });
+                                        }}
+                                        fullWidth={!hasPermission("institutions-delete")}
+                                      >
+                                        Edit
+                                      </Button>
+                                    )}
+
+                                    {hasPermission("institutions-delete") && (
+                                      <Button
+                                        color="error"
+                                        onClick={() => {
+                                          props.openModal({
+                                            showSubmit: true,
+                                            showCancel: true,
+                                            onSubmit: async () => {
+                                              try {
+                                                const res = await authenticatedAxios.delete("/institutions/", {
+                                                  data: { institution_id: institution.id },
+                                                });
+                                                if (res.data.status) {
+                                                  await getMiscData();
+                                                  props.closeModal();
                                                 }
                                               } catch (e) {
                                                 console.error(e);
                                               }
-                                            }}
-                                            initialValues={institution}
-                                            institutionTypes={institutionTypes}
-                                          />
+                                            },
+                                          });
+                                        }}
+                                        fullWidth={!hasPermission("institutions-edit")}
+                                      >
+                                        Delete
+                                      </Button>
+                                    )}
+                                  </ButtonGroup>
+                                ) : null}
 
-                                        ),
-                                      });
-                                    }}
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    disabled={!hasPermission("institutions-delete")}
-
-                                    color="error"
-                                    onClick={() => {
-                                      props.openModal({
-                                        showSubmit: true,
-                                        showCancel: true,
-                                        onSubmit: async () => {
-                                          try {
-                                            const res = await authenticatedAxios.delete(
-                                              "/institutions/",
-                                              {
-                                                data: { institution_id: institution.id },
-                                              }
-                                            );
-                                            if (res.data.status) {
-                                              await getMiscData();
-                                              props.closeModal();
-                                            }
-                                          } catch (e) {
-                                            console.error(e);
-                                          }
-                                        },
-                                      });
-                                    }}
-                                  >
-                                    Delete
-                                  </Button>
-                                </ButtonGroup>
                               </TableCell>
                             </TableRow>
                           );

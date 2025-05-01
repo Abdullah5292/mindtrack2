@@ -111,46 +111,47 @@ const Page = (props) => {
                 </Typography>
               </Stack>
               <div>
-                <Button
-                  disabled={!hasPermission("game-add")}
-
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#24A374",
-                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
-                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
-                  }}
-                  onClick={() => {
-                    props.openDrawer({
-                      width: "30vw",
-                      body: (
-                        <DataForm
-                          title="Add Game"
-                          onSubmit={async (v) => {
-                            try {
-                              const res = await authenticatedAxios.post("/games/", v);
-                              if (res.data.status) {
-                                await getData();
-                                props.closeModal();
+                {hasPermission("game-add") && (
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#24A374",
+                      "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
+                      "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
+                    }}
+                    onClick={() => {
+                      props.openDrawer({
+                        width: "30vw",
+                        body: (
+                          <DataForm
+                            title="Add Game"
+                            onSubmit={async (v) => {
+                              try {
+                                const res = await authenticatedAxios.post("/games/", v);
+                                if (res.data.status) {
+                                  await getData();
+                                  props.closeModal();
+                                }
+                              } catch (e) {
+                                console.error(e);
                               }
-                            } catch (e) {
-                              console.error(e);
-                            }
-                          }}
-                          institutions={institutions}
-                          questions={questions}
-                        />
-                      ),
-                    });
-                  }}
-                >
-                  Add Game
-                </Button>
+                            }}
+                            institutions={institutions}
+                            questions={questions}
+                          />
+                        ),
+                      });
+                    }}
+                  >
+                    Add Game
+                  </Button>
+                )}
+
               </div>
             </Stack>
             <Card sx={{ p: 2, backgroundColor: "white" }}>
@@ -245,65 +246,71 @@ const Page = (props) => {
                                 {moment(game?.createdAt).toLocaleString()}
                               </TableCell>
                               <TableCell>
-                                <ButtonGroup variant="contained">
-                                  <Button
-                                    disabled={!hasPermission("game-edit")}
-                                    color="warning"
-                                    onClick={() => {
-                                      props.openDrawer({
-                                        width: "30vw",
-                                        body: () => ( // ✅ Use a function
-                                          <DataForm
-                                            title="Edit Game"
-                                            onSubmit={async (v) => {
+                                {hasPermission("game-edit") || hasPermission("game-delete") ? (
+                                  <ButtonGroup variant="contained" fullWidth>
+                                    {hasPermission("game-edit") && (
+                                      <Button
+                                        color="warning"
+                                        onClick={() => {
+                                          props.openDrawer({
+                                            width: "30vw",
+                                            body: () => (
+                                              <DataForm
+                                                title="Edit Game"
+                                                onSubmit={async (v) => {
+                                                  try {
+                                                    const res = await authenticatedAxios.put("/games/", v);
+                                                    if (res.data.status) {
+                                                      await getData();
+                                                      props.closeDrawer();
+                                                    }
+                                                  } catch (e) {
+                                                    console.error(e);
+                                                  }
+                                                }}
+                                                initialValues={game}
+                                                institutions={institutions}
+                                                questions={questions}
+                                                closeDrawer={props.closeDrawer}
+                                              />
+                                            ),
+                                          });
+                                        }}
+                                        fullWidth={!hasPermission("game-delete")}
+                                      >
+                                        Edit
+                                      </Button>
+                                    )}
+
+                                    {hasPermission("game-delete") && (
+                                      <Button
+                                        color="error"
+                                        onClick={() => {
+                                          props.openModal({
+                                            showSubmit: true,
+                                            showCancel: true,
+                                            onSubmit: async () => {
                                               try {
-                                                const res = await authenticatedAxios.put("/games/", v);
+                                                const res = await authenticatedAxios.delete("/games/", {
+                                                  data: { institution_id: game.id },
+                                                });
                                                 if (res.data.status) {
                                                   await getData();
-                                                  props.closeDrawer(); // ✅ Close drawer after success
+                                                  props.closeModal();
                                                 }
                                               } catch (e) {
                                                 console.error(e);
                                               }
-                                            }}
-                                            initialValues={game}
-                                            institutions={institutions}
-                                            questions={questions}
-                                            closeDrawer={props.closeDrawer} // ✅ Pass closeDrawer
-                                          />
-                                        ),
-                                      });
-                                    }}
-                                  >
-                                    Edit
-                                  </Button>
-
-                                  <Button
-                                    disabled={!hasPermission("game-delete")}
-                                    color="error"
-                                    onClick={() => {
-                                      props.openModal({
-                                        showSubmit: true,
-                                        showCancel: true,
-                                        onSubmit: async () => {
-                                          try {
-                                            const res = await authenticatedAxios.delete("/games/", {
-                                              data: { institution_id: game.id },
-                                            });
-                                            if (res.data.status) {
-                                              await getData();
-                                              props.closeModal(); // ✅ Close modal after delete
-                                            }
-                                          } catch (e) {
-                                            console.error(e);
-                                          }
-                                        },
-                                      });
-                                    }}
-                                  >
-                                    Delete
-                                  </Button>
-                                </ButtonGroup>
+                                            },
+                                          });
+                                        }}
+                                        fullWidth={!hasPermission("game-edit")}
+                                      >
+                                        Delete
+                                      </Button>
+                                    )}
+                                  </ButtonGroup>
+                                ) : null}
 
                               </TableCell>
                             </TableRow>

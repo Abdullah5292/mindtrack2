@@ -94,45 +94,46 @@ const Page = (props) => {
                 </Typography>
               </Stack>
               <div>
-                <Button
-                  disabled={!hasPermission("role-add")}
-
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#24A374",
-                    "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
-                    "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
-                  }}
-                  onClick={() => {
-                    props.openDrawer({
-                      width: "30vw",
-                      body: (
-                        <DataForm
-                          title="Add Role"
-                          onSubmit={async (v) => {
-                            try {
-                              const res = await authenticatedAxios.post("/roles/", v);
-                              if (res.data.status) {
-                                await getData();
-                                props.closeDrawer();
+                {hasPermission("role-add") && (
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#24A374",
+                      "&:hover": { backgroundColor: "#1E8A63" }, // Slightly darker green on hover
+                      "&:active": { backgroundColor: "#1B7B58" }, // Even darker green on click
+                    }}
+                    onClick={() => {
+                      props.openDrawer({
+                        width: "30vw",
+                        body: (
+                          <DataForm
+                            title="Add Role"
+                            onSubmit={async (v) => {
+                              try {
+                                const res = await authenticatedAxios.post("/roles/", v);
+                                if (res.data.status) {
+                                  await getData();
+                                  props.closeDrawer();
+                                }
+                              } catch (e) {
+                                console.error(e);
                               }
-                            } catch (e) {
-                              console.error(e);
-                            }
-                          }}
-                          permissions={permissions}
-                        />
-                      ),
-                    });
-                  }}
-                >
-                  Add Role
-                </Button>
+                            }}
+                            permissions={permissions}
+                          />
+                        ),
+                      });
+                    }}
+                  >
+                    Add Role
+                  </Button>
+                )}
+
               </div>
             </Stack>
             <Card sx={{ p: 2, backgroundColor: "white" }}>
@@ -217,69 +218,75 @@ const Page = (props) => {
                                 {moment(role.createdAt).toLocaleString()}
                               </TableCell>
                               <TableCell>
-                                <ButtonGroup variant="contained">
-                                  <Button
-                                    disabled={!hasPermission("role-edit")}
-                                    color="warning"
-                                    onClick={() => {
-                                      props.openDrawer({
-                                        width: "30vw",
-                                        body: (
-                                          <DataForm
-                                            title="Edit Role"
-                                            onSubmit={async (v) => {
+                                {hasPermission("role-edit") || hasPermission("role-delete") ? (
+                                  <ButtonGroup variant="contained" fullWidth>
+                                    {hasPermission("role-edit") && (
+                                      <Button
+                                        color="warning"
+                                        onClick={() => {
+                                          props.openDrawer({
+                                            width: "30vw",
+                                            body: (
+                                              <DataForm
+                                                title="Edit Role"
+                                                onSubmit={async (v) => {
+                                                  try {
+                                                    const res = await authenticatedAxios.put("/roles/", {
+                                                      ...v,
+                                                      roleId: v.id,
+                                                    });
+                                                    if (res.data.status) {
+                                                      await getMiscData();
+                                                      props.closeModal();
+                                                      props.closeDrawer();
+                                                    }
+                                                  } catch (e) {
+                                                    console.error(e);
+                                                  }
+                                                }}
+                                                initialValues={role}
+                                                permissions={permissions}
+                                                closeDrawer={props.closeDrawer}
+                                              />
+                                            ),
+                                          });
+                                        }}
+                                        fullWidth={!hasPermission("role-delete")}
+                                      >
+                                        Edit
+                                      </Button>
+                                    )}
+
+                                    {hasPermission("role-delete") && (
+                                      <Button
+                                        color="error"
+                                        onClick={() => {
+                                          props.openModal({
+                                            showSubmit: true,
+                                            showCancel: true,
+                                            onSubmit: async () => {
                                               try {
-                                                const res = await authenticatedAxios.put(
-                                                  "/roles/",
-                                                  { ...v, roleId: v.id }
-                                                );
+                                                const res = await authenticatedAxios.delete("/roles/", {
+                                                  data: { roleId: role.id },
+                                                });
                                                 if (res.data.status) {
                                                   await getMiscData();
                                                   props.closeModal();
-                                                  props.closeDrawer();
-
                                                 }
                                               } catch (e) {
                                                 console.error(e);
                                               }
-                                            }}
-                                            initialValues={role}
-                                            permissions={permissions}
-                                            closeDrawer={props.closeDrawer}
-                                          />
-                                        ),
-                                      });
-                                    }}
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    disabled={!hasPermission("role-delete")}
+                                            },
+                                          });
+                                        }}
+                                        fullWidth={!hasPermission("role-edit")}
+                                      >
+                                        Delete
+                                      </Button>
+                                    )}
+                                  </ButtonGroup>
+                                ) : null}
 
-                                    color="error"
-                                    onClick={() => {
-                                      props.openModal({
-                                        showSubmit: true,
-                                        showCancel: true,
-                                        onSubmit: async () => {
-                                          try {
-                                            const res = await authenticatedAxios.delete("/roles/", {
-                                              data: { roleId: role.id },
-                                            });
-                                            if (res.data.status) {
-                                              await getMiscData();
-                                              props.closeModal();
-                                            }
-                                          } catch (e) {
-                                            console.error(e);
-                                          }
-                                        },
-                                      });
-                                    }}
-                                  >
-                                    Delete
-                                  </Button>
-                                </ButtonGroup>
                               </TableCell>
                             </TableRow>
                           );
