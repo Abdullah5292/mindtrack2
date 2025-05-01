@@ -35,7 +35,8 @@ export const items = [
   {
     title: "Institutions",
     path: "/institutions",
-    requires: [],
+
+    requires: ["institution-view"],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <BuildingLibraryIcon />
@@ -46,7 +47,7 @@ export const items = [
   {
     title: "Games",
     path: "/games",
-    requires: [],
+    requires: ["games-view"],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <PuzzlePieceIcon />
@@ -56,7 +57,7 @@ export const items = [
   {
     title: "Roles",
     path: "/roles",
-    requires: [],
+    requires: ["role-view"],
     icon: (
       <SvgIcon fontSize="small" sx={{ color: iconColor }}>
         <UserGroupIcon />
