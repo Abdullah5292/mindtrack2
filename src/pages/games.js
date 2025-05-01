@@ -40,12 +40,14 @@ import { useFormik } from "formik";
 import moment from "moment";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
+import QuestionDialog from "src/components/QuestionDialog";
 import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
 import { getGames, getInstitutions, getInstitutionTypes, getQuestions } from "src/utils/client";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
+
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -76,6 +78,9 @@ const Page = (props) => {
     const res = await getGames(search);
     if (res) setData(res);
   };
+
+
+
   useEffect(() => {
     getData("");
     getMiscData();
@@ -84,7 +89,7 @@ const Page = (props) => {
   return (
     <>
       <Head>
-        <title>Mindtrack | Roles</title>
+        <title>Mindtrack | Games</title>
       </Head>
       <Box
         component="main"
@@ -348,10 +353,9 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
     }
 
   });
-  const [open, setOpen] = useState(false); // State for dialog box
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleOpen = () => setOpenDialog(true);
+  const handleClose = () => setOpenDialog(false);
   return (
     <Box
       component="main"
@@ -453,6 +457,12 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                         View Questions
                       </Button>
                     </Grid>
+                    <QuestionDialog
+                      open={openDialog}
+                      handleClose={handleClose}
+                      questions={questions}
+                      formik={formik}
+                    />
 
                     <Grid item xs={6}>
                       <TextField
@@ -525,7 +535,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
         </Stack>
       </Container>
 
-      {/* Dialog Box for Viewing Questions */}
+      {/* Dialog Box for Viewing Questions
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ color: "#601631" }}>Questions</DialogTitle>
         <DialogContent dividers>
@@ -551,13 +561,14 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
               />
             ))}
           </FormGroup>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} sx={{ color: "#601631" }}>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        </DialogContent> */}
+
+      <DialogActions>
+        <Button onClick={handleClose} sx={{ color: "#601631" }}>
+          Close
+        </Button>
+      </DialogActions>
+
+    </Box >
   );
 };
