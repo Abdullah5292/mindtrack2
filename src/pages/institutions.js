@@ -432,7 +432,7 @@ const Page = (props) => {
                                             onSubmit: async () => {
                                               try {
                                                 const res = await authenticatedAxios.delete("/institutions/", {
-                                                  data: { institution_id: institution.id },
+                                                  data: { institutionId: institution.id },
                                                 });
                                                 if (res.data.status) {
                                                   await getMiscData();

@@ -309,7 +309,7 @@ const Page = (props) => {
                                           showCancel: true,
                                           onSubmit: async () => {
                                             const res = await authenticatedAxios.delete("/users/", {
-                                              data: { user_id: user.id },
+                                              data: { userId: user.id },
                                             });
                                             if (res.data.status) {
                                               await getData();
