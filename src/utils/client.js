@@ -41,3 +41,8 @@ export const getInstitutionTypes = async () => {
   if (response.data?.status) return response.data.data;
   return false;
 };
+export const getPlayers = async (search) => {
+  const response = await authenticatedAxios.get("/players//", { params: { search } });
+  if (response.data?.status) return response.data.data;
+  return false;
+}
