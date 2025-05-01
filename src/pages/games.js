@@ -50,7 +50,6 @@ import { getGames, getInstitutions, getInstitutionTypes, getQuestions } from "sr
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
 
-
 const Page = (props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -81,8 +80,6 @@ const Page = (props) => {
     if (res) setData(res);
   };
 
-
-
   useEffect(() => {
     getData("");
     getMiscData();
@@ -111,7 +108,6 @@ const Page = (props) => {
               <div>
                 <Button
                   disabled={!hasPermission("game-add")}
-
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -213,7 +209,6 @@ const Page = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-
                       {Array.isArray(data) &&
                         data.map((game, index) => {
                           return (
@@ -234,8 +229,8 @@ const Page = (props) => {
                                 <Stack direction="row" spacing={1}>
                                   {Array.isArray(game.tags) && game.tags.length > 0
                                     ? game.tags.map((a, index) => (
-                                      <Chip key={index} label={a} color="primary" />
-                                    )) // ✅ Added key
+                                        <Chip key={index} label={a} color="primary" />
+                                      )) // ✅ Added key
                                     : "-"}
                                 </Stack>
                               </TableCell>
@@ -250,12 +245,16 @@ const Page = (props) => {
                                     onClick={() => {
                                       props.openDrawer({
                                         width: "30vw",
-                                        body: () => ( // ✅ Use a function
+                                        body: () => (
+                                          // ✅ Use a function
                                           <DataForm
                                             title="Edit Game"
                                             onSubmit={async (v) => {
                                               try {
-                                                const res = await authenticatedAxios.put("/games/", v);
+                                                const res = await authenticatedAxios.put(
+                                                  "/games/",
+                                                  { ...v, gameId: v.id }
+                                                );
                                                 if (res.data.status) {
                                                   await getData();
                                                   props.closeDrawer(); // ✅ Close drawer after success
@@ -286,7 +285,7 @@ const Page = (props) => {
                                         onSubmit: async () => {
                                           try {
                                             const res = await authenticatedAxios.delete("/games/", {
-                                              data: { institution_id: game.id },
+                                              data: { gameId: game.id },
                                             });
                                             if (res.data.status) {
                                               await getData();
@@ -302,7 +301,6 @@ const Page = (props) => {
                                     Delete
                                   </Button>
                                 </ButtonGroup>
-
                               </TableCell>
                             </TableRow>
                           );
@@ -351,13 +349,12 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
       const formattedValues = {
         ...values,
         tags: values.tags
-          .split(",")   // Split the string into an array
-          .map((tag) => tag.trim())  // Trim extra spaces
-          .filter(Boolean),  // Remove any empty strings
+          .split(",") // Split the string into an array
+          .map((tag) => tag.trim()) // Trim extra spaces
+          .filter(Boolean), // Remove any empty strings
       };
-      await onSubmit(formattedValues)
-    }
-
+      await onSubmit(formattedValues);
+    },
   });
   const [openDialog, setOpenDialog] = useState(false);
   const handleOpen = () => setOpenDialog(true);
@@ -460,7 +457,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                         onClick={handleOpen}
                         sx={{ color: "#601631", borderColor: "#601631" }}
                       >
-                        View Questions
+                        Select Questions
                       </Button>
                     </Grid>
                     <QuestionDialog
@@ -522,19 +519,18 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                     backgroundColor: "#601631",
                     color: "white",
                     padding: "10px 60px",
-                    '&:hover': {
-                      backgroundColor: '#4a1026', // darker shade on hover
+                    "&:hover": {
+                      backgroundColor: "#4a1026", // darker shade on hover
                     },
-                    '&:active': {
-                      backgroundColor: '#380c1c', // even darker on click
+                    "&:active": {
+                      backgroundColor: "#380c1c", // even darker on click
                     },
-                    boxShadow: 'none', // optional: remove default MUI shadow
-                    textTransform: 'none', // optional: prevent all-uppercase text
+                    boxShadow: "none", // optional: remove default MUI shadow
+                    textTransform: "none", // optional: prevent all-uppercase text
                   }}
                 >
                   Save details
                 </Button>
-
               </CardActions>
             </Card>
           </form>
@@ -574,7 +570,6 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
           Close
         </Button>
       </DialogActions>
-
-    </Box >
+    </Box>
   );
 };
