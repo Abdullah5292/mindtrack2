@@ -49,7 +49,9 @@ import { authenticatedAxios } from "src/utils/axios";
 import { getGames, getInstitutions, getInstitutionTypes, getQuestions } from "src/utils/client";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
-import * as Yup from "yup";
+import * as Yup from 'yup';
+
+
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -80,6 +82,8 @@ const Page = (props) => {
     const res = await getGames(search);
     if (res) setData(res);
   };
+
+
 
   useEffect(() => {
     getData("");
@@ -212,6 +216,7 @@ const Page = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
+
                       {Array.isArray(data) &&
                         data.map((game, index) => {
                           return (
@@ -253,8 +258,12 @@ const Page = (props) => {
                                               <DataForm
                                                 title="Edit Game"
                                                 onSubmit={async (v) => {
+
                                                   try {
-                                                    const res = await authenticatedAxios.put("/games/", v);
+                                                    const res = await authenticatedAxios.put(
+                                                      "/games/",
+                                                      { ...v, gameId: v.id }
+                                                    );
                                                     if (res.data.status) {
                                                       await getData();
                                                       props.closeDrawer();
@@ -276,73 +285,38 @@ const Page = (props) => {
                                         Edit
                                       </Button>
                                     )}
-                                    <ButtonGroup variant="contained">
+
+                                    {hasPermission("game-delete") && (
                                       <Button
-                                        disabled={!hasPermission("game-edit")}
-                                        color="warning"
+                                        color="error"
                                         onClick={() => {
-                                          props.openDrawer({
-                                            width: "30vw",
-                                            body: () => (
-                                              // ✅ Use a function
-                                              <DataForm
-                                                title="Edit Game"
-                                                onSubmit={async (v) => {
-                                                  try {
-                                                    const res = await authenticatedAxios.put(
-                                                      "/games/",
-                                                      { ...v, gameId: v.id }
-                                                    );
-                                                    if (res.data.status) {
-                                                      await getData();
-                                                      props.closeDrawer(); // ✅ Close drawer after success
-                                                    }
-                                                  } catch (e) {
-                                                    console.error(e);
-                                                  }
-                                                }}
-                                                initialValues={game}
-                                                institutions={institutions}
-                                                questions={questions}
-                                                closeDrawer={props.closeDrawer} // ✅ Pass closeDrawer
-                                              />
-                                            ),
+                                          props.openModal({
+                                            showSubmit: true,
+                                            showCancel: true,
+                                            onSubmit: async () => {
+                                              try {
+                                                const res = await authenticatedAxios.delete("/games/", {
+                                                  data: { gameId: game.id },
+                                                });
+                                                if (res.data.status) {
+                                                  await getData();
+                                                  props.closeModal();
+                                                }
+                                              } catch (e) {
+                                                console.error(e);
+                                              }
+                                            },
                                           });
                                         }}
+                                        fullWidth={!hasPermission("game-edit")}
                                       >
-                                        Edit
+                                        Delete
                                       </Button>
-
-                                      {hasPermission("game-delete") && (
-                                        <Button
-                                          color="error"
-                                          onClick={() => {
-                                            props.openModal({
-                                              showSubmit: true,
-                                              showCancel: true,
-                                              onSubmit: async () => {
-                                                try {
-                                                  const res = await authenticatedAxios.delete("/games/", {
-                                                    data: { gameId: game.id },
-                                                  });
-                                                  if (res.data.status) {
-                                                    await getData();
-                                                    props.closeModal();
-                                                  }
-                                                } catch (e) {
-                                                  console.error(e);
-                                                }
-                                              },
-                                            });
-                                          }}
-                                          fullWidth={!hasPermission("game-edit")}
-                                        >
-                                          Delete
-                                        </Button>
-                                      )}
-                                    </ButtonGroup>
+                                    )}
+                                  </ButtonGroup>
                                 ) : null}
-                                  </TableCell>
+
+                              </TableCell>
                             </TableRow>
                           );
                         })}
@@ -386,32 +360,34 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
       time: initialValues?.time || 0,
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      institutionId: Yup.string().required("Institution is required"),
-      tags: Yup.string().required("Tags are required"),
+      name: Yup.string().required('Name is required'),
+      institutionId: Yup.string().required('Institution is required'),
+      tags: Yup.string().required('Tags are required'),
       time: Yup.number()
-        .min(300, "Time should be at least 300 seconds")
-        .required("Time is required"),
+        .min(300, 'Time should be at least 300 seconds')
+        .required('Time is required'),
       giveQuestions: Yup.number()
-        .min(10, "Give questions should be at least 10")
+        .min(10, 'Give questions should be at least 10')
         .max(
-          Yup.ref("questions.length"), // Reference to `questions` array length from values
-          "Give questions cannot be more than selected questions"
+          Yup.ref('questions.length'), // Reference to `questions` array length from values
+          'Give questions cannot be more than selected questions'
         )
-        .required("Give questions is required"),
+        .required('Give questions is required'),
     }),
+
 
     onSubmit: async (values) => {
       // Convert tags from string to array if necessary
       const formattedValues = {
         ...values,
         tags: values.tags
-          .split(",") // Split the string into an array
-          .map((tag) => tag.trim()) // Trim extra spaces
-          .filter(Boolean), // Remove any empty strings
+          .split(",")   // Split the string into an array
+          .map((tag) => tag.trim())  // Trim extra spaces
+          .filter(Boolean),  // Remove any empty strings
       };
-      await onSubmit(formattedValues);
-    },
+      await onSubmit(formattedValues)
+    }
+
   });
   const [openDialog, setOpenDialog] = useState(false);
   const handleOpen = () => setOpenDialog(true);
@@ -514,7 +490,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                         onClick={handleOpen}
                         sx={{ color: "#601631", borderColor: "#601631" }}
                       >
-                        Select Questions
+                        View Questions
                       </Button>
                     </Grid>
                     <QuestionDialog
@@ -579,18 +555,19 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                     backgroundColor: "#601631",
                     color: "white",
                     padding: "10px 60px",
-                    "&:hover": {
-                      backgroundColor: "#4a1026", // darker shade on hover
+                    '&:hover': {
+                      backgroundColor: '#4a1026', // darker shade on hover
                     },
-                    "&:active": {
-                      backgroundColor: "#380c1c", // even darker on click
+                    '&:active': {
+                      backgroundColor: '#380c1c', // even darker on click
                     },
-                    boxShadow: "none", // optional: remove default MUI shadow
-                    textTransform: "none", // optional: prevent all-uppercase text
+                    boxShadow: 'none', // optional: remove default MUI shadow
+                    textTransform: 'none', // optional: prevent all-uppercase text
                   }}
                 >
                   Save details
                 </Button>
+
               </CardActions>
             </Card>
           </form>
@@ -624,6 +601,9 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
             ))}
           </FormGroup>
         </DialogContent> */}
-    </Box>
+
+
+
+    </Box >
   );
 };
