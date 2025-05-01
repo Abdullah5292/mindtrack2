@@ -4,6 +4,8 @@ import { Buffer } from "buffer";
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close'; // Material UI Close ico
 import { CircularProgress } from "@mui/material";
+import { hasPermission } from "src/utils/utils";
+
 import {
   Box,
   Modal,
@@ -175,6 +177,7 @@ const Page = (props) => {
               </Stack>
               <div>
                 <Button
+                  disabled={!hasPermission("institution-add")}
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -375,6 +378,7 @@ const Page = (props) => {
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
+                                    disabled={!hasPermission("institution-edit")}
                                     color="warning"
                                     onClick={() => {
                                       props.openDrawer({
@@ -418,6 +422,8 @@ const Page = (props) => {
                                     Edit
                                   </Button>
                                   <Button
+                                    disabled={!hasPermission("institution-delete")}
+
                                     color="error"
                                     onClick={() => {
                                       props.openModal({

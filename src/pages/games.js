@@ -1,5 +1,7 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import { hasPermission } from "src/utils/utils";
+
 import {
   Box,
   Button,
@@ -108,6 +110,8 @@ const Page = (props) => {
               </Stack>
               <div>
                 <Button
+                  disabled={!hasPermission("games-add")}
+
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -241,6 +245,7 @@ const Page = (props) => {
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
+                                    disabled={!hasPermission("games-edit")}
                                     color="warning"
                                     onClick={() => {
                                       props.openDrawer({
@@ -272,6 +277,7 @@ const Page = (props) => {
                                   </Button>
 
                                   <Button
+                                    disabled={!hasPermission("games-delete")}
                                     color="error"
                                     onClick={() => {
                                       props.openModal({

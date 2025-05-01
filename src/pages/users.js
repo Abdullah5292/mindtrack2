@@ -322,7 +322,7 @@ const Page = (props) => {
 
                                 <Button
                                   color="error"
-                                  disabled={!hasPermission("user-add")}
+                                  disabled={!hasPermission("user-delete")}
                                   onClick={() => {
                                     props.openModal({
                                       showSubmit: true,

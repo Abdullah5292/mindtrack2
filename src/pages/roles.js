@@ -1,5 +1,7 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import { hasPermission } from "src/utils/utils";
+
 import {
   Box,
   Button,
@@ -93,6 +95,8 @@ const Page = (props) => {
               </Stack>
               <div>
                 <Button
+                  disabled={!hasPermission("roles-add")}
+
                   startIcon={
                     <SvgIcon fontSize="small">
                       <PlusIcon />
@@ -215,6 +219,7 @@ const Page = (props) => {
                               <TableCell>
                                 <ButtonGroup variant="contained">
                                   <Button
+                                    disabled={!hasPermission("roles-edit")}
                                     color="warning"
                                     onClick={() => {
                                       props.openDrawer({
@@ -249,6 +254,8 @@ const Page = (props) => {
                                     Edit
                                   </Button>
                                   <Button
+                                    disabled={!hasPermission("roles-delete")}
+
                                     color="error"
                                     onClick={() => {
                                       props.openModal({
