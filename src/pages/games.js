@@ -49,6 +49,8 @@ import { authenticatedAxios } from "src/utils/axios";
 import { getGames, getInstitutions, getInstitutionTypes, getQuestions } from "src/utils/client";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
+import * as Yup from 'yup';
+
 
 
 const Page = (props) => {
@@ -346,6 +348,23 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
       giveQuestions: initialValues?.giveQuestions || "",
       time: initialValues?.time || 0,
     },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Name is required'),
+      institutionId: Yup.string().required('Institution is required'),
+      tags: Yup.string().required('Tags are required'),
+      time: Yup.number()
+        .min(300, 'Time should be at least 300 seconds')
+        .required('Time is required'),
+      giveQuestions: Yup.number()
+        .min(10, 'Give questions should be at least 10')
+        .max(
+          Yup.ref('questions.length'), // Reference to `questions` array length from values
+          'Give questions cannot be more than selected questions'
+        )
+        .required('Give questions is required'),
+    }),
+
+
     onSubmit: async (values) => {
       // Convert tags from string to array if necessary
       const formattedValues = {
@@ -475,11 +494,12 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                         fullWidth
                         label="Time (in seconds)"
                         name="time"
-                        type="text" // Ensures it's fully typeable
-                        inputMode="numeric" // Helps with number input on mobile
+                        type="number"
                         onChange={formik.handleChange}
                         required
                         value={formik.values.time}
+                        error={formik.touched.time && Boolean(formik.errors.time)}
+                        helperText={formik.touched.time && formik.errors.time}
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             "& fieldset": { borderColor: "#601631" },
@@ -499,6 +519,8 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
                         onChange={formik.handleChange}
                         required
                         value={formik.values.giveQuestions}
+                        error={formik.touched.giveQuestions && Boolean(formik.errors.giveQuestions)}
+                        helperText={formik.touched.giveQuestions && formik.errors.giveQuestions}
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             "& fieldset": { borderColor: "#601631" },
@@ -569,11 +591,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
           </FormGroup>
         </DialogContent> */}
 
-      <DialogActions>
-        <Button onClick={handleClose} sx={{ color: "#601631" }}>
-          Close
-        </Button>
-      </DialogActions>
+
 
     </Box >
   );

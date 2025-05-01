@@ -319,6 +319,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [], closeD
       name: initialValues?.name || "",
       permissions: initialValues?.RolePermissions?.map((p) => p.permissionId) || [],
     },
+
     onSubmit: async (values) => {
       await onSubmit(values);
       closeDrawer?.(); // 👈 Close the drawer after form submission
