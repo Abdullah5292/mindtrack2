@@ -42,7 +42,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
-import { getInstitutions, getRoles, getUsers } from "src/utils/client";
+import { getInstitutions, getRoles, getUsers, getPlayers } from "src/utils/client";
 import { getInitials } from "src/utils/get-initials";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
@@ -63,7 +63,7 @@ const Page = (props) => {
   }, []);
 
   const getData = async () => {
-    const res = await getUsers();
+    const res = await getPlayers();
     if (res) setData(res);
 
     const roleRes = await getRoles();
