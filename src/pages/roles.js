@@ -231,6 +231,8 @@ const Page = (props) => {
                                                 if (res.data.status) {
                                                   await getMiscData();
                                                   props.closeModal();
+                                                  props.closeDrawer();
+
                                                 }
                                               } catch (e) {
                                                 console.error(e);
@@ -238,6 +240,7 @@ const Page = (props) => {
                                             }}
                                             initialValues={role}
                                             permissions={permissions}
+                                            closeDrawer={props.closeDrawer}
                                           />
                                         ),
                                       });
@@ -302,111 +305,106 @@ DrawerWrapped.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default DrawerWrapped;
 
-const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [] }) => {
+const DataForm = ({ formTitle, onSubmit, initialValues, permissions = [], closeDrawer }) => {
   const formik = useFormik({
     initialValues: {
       id: initialValues?.id || 0,
       name: initialValues?.name || "",
-      permissions: initialValues?.RolePermissions.map((p) => p.permissionId) || [],
+      permissions: initialValues?.RolePermissions?.map((p) => p.permissionId) || [],
     },
-    onSubmit,
+    onSubmit: async (values) => {
+      await onSubmit(values);
+      closeDrawer?.(); // 👈 Close the drawer after form submission
+    },
   });
 
   return (
     <Box
       component="main"
       sx={{
-        flexGrow: 1,
-        py: 8,
-        px: 1,
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
         backgroundColor: "#FAEAF0",
-        boxShadow: "none",
-        border: "none",
+        p: 2,
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{ flex: 1, overflow: 'auto' }}>
         <Stack spacing={3}>
-          <div>
-            <Typography variant="h4" sx={{ color: "#601631" }}>
-              {formTitle}
-            </Typography>
-          </div>
-          <div>
-            <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
-              <div>
-                <CardHeader
-                  subheader="The information can be edited"
-                  title="Role Data"
-                  sx={{ color: "#601631" }}
-                />
-                <CardContent sx={{ pt: 0 }}>
-                  <Box sx={{ m: -1.5 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Name"
-                          name="name"
-                          onChange={formik.handleChange}
-                          required
-                          value={formik.values.name}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                  <Card sx={{ mt: 3, p: 2 }}>
-                    <InputLabel sx={{ color: "#601631", fontWeight: "bold" }}>
-                      Permissions
-                    </InputLabel>
-                    <Stack maxHeight="50vh" overflow="auto" sx={{ mt: 1 }}>
-                      <FormGroup>
-                        {permissions.map((p) => (
-                          <FormControlLabel
-                            key={p.id}
-                            control={<Checkbox />}
-                            label={p.name}
-                            checked={formik.values.permissions?.includes(p.id)}
-                            onChange={(e) => {
-                              formik.setFieldValue(
-                                "permissions",
-                                e.target.checked
-                                  ? [...formik.values.permissions, p.id]
-                                  : formik.values.permissions.filter((i) => i !== p.id)
-                              );
-                            }}
-                          />
-                        ))}
-                      </FormGroup>
-                    </Stack>
-                  </Card>
-                </CardContent>
-                <CardActions sx={{ justifyContent: "center" }}>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    sx={{
-                      backgroundColor: "#601631",
-                      color: "white",
-                      padding: "10px 60px",
-                      '&:hover': {
-                        backgroundColor: '#4a1026', // darker shade on hover
-                      },
-                      '&:active': {
-                        backgroundColor: '#380c1c', // even darker on click
-                      },
-                      boxShadow: 'none', // optional: remove default MUI shadow
-                      textTransform: 'none', // optional: prevent all-uppercase text
-                    }}
-                  >
-                    Save details
-                  </Button>
+          <Typography variant="h4" sx={{ color: "#601631" }}>
+            {formTitle}
+          </Typography>
 
-                </CardActions>
-              </div>
-            </form>
-          </div>
+          <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
+            <CardHeader
+              subheader="The information can be edited"
+              title="Role Data"
+              sx={{ color: "#601631" }}
+            />
+            <CardContent sx={{ pt: 0 }}>
+              <Box sx={{ m: -1.5 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      onChange={formik.handleChange}
+                      required
+                      value={formik.values.name}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+
+              <Card sx={{ mt: 3, p: 2 }}>
+                <InputLabel sx={{ color: "#601631", fontWeight: "bold" }}>
+                  Permissions
+                </InputLabel>
+                <Stack maxHeight="30vh" overflow="auto" sx={{ mt: 1 }}>
+                  <FormGroup>
+                    {permissions.map((p) => (
+                      <FormControlLabel
+                        key={p.id}
+                        control={<Checkbox />}
+                        label={p.name}
+                        checked={formik.values.permissions?.includes(p.id)}
+                        onChange={(e) => {
+                          formik.setFieldValue(
+                            "permissions",
+                            e.target.checked
+                              ? [...formik.values.permissions, p.id]
+                              : formik.values.permissions.filter((i) => i !== p.id)
+                          );
+                        }}
+                      />
+                    ))}
+                  </FormGroup>
+                </Stack>
+              </Card>
+            </CardContent>
+
+            <CardActions sx={{ justifyContent: "center", mt: 2 }}>
+              <Button
+                variant="contained"
+                type="submit"
+                sx={{
+                  backgroundColor: "#601631",
+                  color: "white",
+                  padding: "10px 60px",
+                  '&:hover': { backgroundColor: '#4a1026' },
+                  '&:active': { backgroundColor: '#380c1c' },
+                  boxShadow: 'none',
+                  textTransform: 'none',
+                }}
+              >
+                Save details
+              </Button>
+            </CardActions>
+          </form>
         </Stack>
       </Container>
     </Box>
   );
 };
+

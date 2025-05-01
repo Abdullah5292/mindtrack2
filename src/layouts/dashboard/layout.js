@@ -39,13 +39,21 @@ export const Layout = withAuthGuard((props) => {
   );
 
   return (
-    <>
+
+    <div
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#8d1f47', // Fallback background color
+      }}
+    >
       <Image
         src="/assets/Background.svg"
         alt="Background"
-        layout="fill" // Makes it cover the full parent div
-        objectFit="cover" // Ensures it scales properly
-        priority // Loads the image faster
+        layout="fill"
+        objectFit="cover"
+        priority
       />
       <TopNav onNavOpen={() => setOpenNav(true)} />
       <SideNav
@@ -57,6 +65,6 @@ export const Layout = withAuthGuard((props) => {
           {children}
         </LayoutContainer>
       </LayoutRoot>
-    </>
+    </div>
   );
 });

@@ -408,7 +408,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
       component="main"
       sx={{
         flexGrow: 1,
-        py: 8,
+        py: 1,
         px: 1,
         backgroundColor: "#FAEAF0",
         boxShadow: "none",
@@ -637,19 +637,8 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
                       position: 'relative',
                     }}
                   >
-                    {formik.isSubmitting ? (
-                      <CircularProgress
-                        size={24}
-                        sx={{
-                          color: 'white',
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)', // Center the loader
-                          zIndex: 1300, // Higher z-index to make sure it appears above other components
-                        }}
-                      />
-                    ) : (
+
+                    {(
                       "Save details"
                     )}
                   </Button>

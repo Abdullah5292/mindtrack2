@@ -108,20 +108,28 @@ const WithDrawer = (Component) =>
           anchor="right"
           sx={{
             "& .MuiDrawer-paper": {
-              width: "552px", // Fixed width
-              bgcolor: "#FAEAF0", // Updated color
-              height: "80vh", // Adjusted height (100vh - margin)
-              marginTop: "10vh", // Space from the top
-              marginBottom: "10vh", // Space from the bottom
-              borderTopLeftRadius: "16px", // Rounded only on top-left
-              borderBottomLeftRadius: "16px", // Rounded only on bottom-left
-              borderTopRightRadius: "0px", // No rounding on the border side
-              borderBottomRightRadius: "0px", // No rounding on the border side
+              width: "552px",
+              bgcolor: "#FAEAF0",
+              height: "80vh",
+              marginTop: "10vh",
+              marginBottom: "10vh",
+              borderTopLeftRadius: "16px",
+              borderBottomLeftRadius: "16px",
+              borderTopRightRadius: "0px",
+              borderBottomRightRadius: "0px",
               boxShadow: 3,
+              overflow: "hidden", // 🔒 Prevent scroll inside the drawer paper
             },
           }}
         >
-          <Box height="100%" width="552px" p={3}>
+          <Box
+            height="100%"
+            width="552px"
+            p={3}
+            sx={{
+              overflow: "hidden", // 🔒 Prevent scroll inside the Box
+            }}
+          >
             {typeof drawerSettings.body === "function"
               ? drawerSettings.body()
               : drawerSettings.body}

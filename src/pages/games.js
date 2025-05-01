@@ -124,7 +124,7 @@ const Page = (props) => {
                             try {
                               const res = await authenticatedAxios.post("/games/", v);
                               if (res.data.status) {
-                                await getMiscData();
+                                await getData();
                                 props.closeModal();
                               }
                             } catch (e) {
@@ -240,18 +240,15 @@ const Page = (props) => {
                                     onClick={() => {
                                       props.openDrawer({
                                         width: "30vw",
-                                        body: (
+                                        body: () => ( // ✅ Use a function
                                           <DataForm
                                             title="Edit Game"
                                             onSubmit={async (v) => {
                                               try {
-                                                const res = await authenticatedAxios.put(
-                                                  "/games/",
-                                                  v
-                                                );
+                                                const res = await authenticatedAxios.put("/games/", v);
                                                 if (res.data.status) {
                                                   await getData();
-                                                  props.closeModal();
+                                                  props.closeDrawer(); // ✅ Close drawer after success
                                                 }
                                               } catch (e) {
                                                 console.error(e);
@@ -260,6 +257,7 @@ const Page = (props) => {
                                             initialValues={game}
                                             institutions={institutions}
                                             questions={questions}
+                                            closeDrawer={props.closeDrawer} // ✅ Pass closeDrawer
                                           />
                                         ),
                                       });
@@ -267,6 +265,7 @@ const Page = (props) => {
                                   >
                                     Edit
                                   </Button>
+
                                   <Button
                                     color="error"
                                     onClick={() => {
@@ -275,15 +274,12 @@ const Page = (props) => {
                                         showCancel: true,
                                         onSubmit: async () => {
                                           try {
-                                            const res = await authenticatedAxios.delete(
-                                              "/games/",
-                                              {
-                                                data: { institution_id: game.id },
-                                              }
-                                            );
+                                            const res = await authenticatedAxios.delete("/games/", {
+                                              data: { institution_id: game.id },
+                                            });
                                             if (res.data.status) {
-                                              await getMiscData();
-                                              props.closeModal();
+                                              await getData();
+                                              props.closeModal(); // ✅ Close modal after delete
                                             }
                                           } catch (e) {
                                             console.error(e);
@@ -295,6 +291,7 @@ const Page = (props) => {
                                     Delete
                                   </Button>
                                 </ButtonGroup>
+
                               </TableCell>
                             </TableRow>
                           );
@@ -332,10 +329,10 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
     initialValues: {
       id: initialValues?.id || 0,
       name: initialValues?.name || "",
-      institutionId: initialValues?.institutionId || 0,
+      institutionId: initialValues?.institutionId || "",
       tags: initialValues?.tags || [],
       questions: initialValues?.GameQuestion?.map((q) => q.questionId) || [],
-      giveQuestions: initialValues?.giveQuestions || 0,
+      giveQuestions: initialValues?.giveQuestions || "",
       time: initialValues?.time || 0,
     },
     onSubmit: async (values) => {
@@ -360,7 +357,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], quest
       component="main"
       sx={{
         flexGrow: 1,
-        py: 8,
+        py: 1,
         backgroundColor: "transparent",
       }}
     >

@@ -36,8 +36,9 @@ const WithModal = (Component) =>
     };
 
     const closeModal = () => {
+      const onCancelFn = modalSettings?.onCancel || (() => { });
+      onCancelFn();
       setModalSettings({});
-      modalSettings.onCancel();
       setModalOpen(false);
     };
 
@@ -48,13 +49,28 @@ const WithModal = (Component) =>
       showCancel,
       title,
       onSubmit,
-      onCancel,
       maxWidth,
       noClose,
       blur,
     } = {
       ...defaultModalSettings,
       ...modalSettings,
+    };
+
+    const commonButtonStyles = {
+      backgroundColor: "#5f1630",
+      color: "#fff",
+      textTransform: "none",
+      "&:hover": {
+        backgroundColor: "#4a1026",
+      },
+      "&:active": {
+        backgroundColor: "#3e0e1e",
+      },
+      "&:focus": {
+        backgroundColor: "#5f1630",
+        boxShadow: "none",
+      },
     };
 
     return (
@@ -86,54 +102,12 @@ const WithModal = (Component) =>
           {showBody && <DialogContent>{bodyComp}</DialogContent>}
           <DialogActions>
             {showCancel && (
-              <Button
-                variant="contained"
-                onClick={closeModal}
-                sx={{
-                  backgroundColor: "#5f1630", // Default button color
-                  color: "#fff", // White text for contrast
-                  '&:hover': {
-                    backgroundColor: '#4a1026', // Darker shade on hover
-                  },
-                  '&:active': {
-                    backgroundColor: '#3e0e1e', // Darker shade on click
-                  },
-                  '&.MuiButton-root': {
-                    backgroundColor: "#5f1630", // Ensure no inherited styles
-                  },
-                  textTransform: 'none', // Prevent text transformation
-                  '&:focus': {
-                    backgroundColor: '#5f1630', // Keep button color consistent on focus
-                    boxShadow: 'none', // Remove any focus outline
-                  },
-                }}
-              >
+              <Button variant="contained" onClick={closeModal} sx={commonButtonStyles}>
                 Cancel
               </Button>
             )}
             {showSubmit && (
-              <Button
-                variant="contained"
-                onClick={onSubmit}
-                sx={{
-                  backgroundColor: "#5f1630", // Default button color
-                  color: "#fff", // White text for contrast
-                  '&:hover': {
-                    backgroundColor: '#4a1026', // Darker shade on hover
-                  },
-                  '&:active': {
-                    backgroundColor: '#3e0e1e', // Darker shade on click
-                  },
-                  '&.MuiButton-root': {
-                    backgroundColor: "#5f1630", // Ensure no inherited styles
-                  },
-                  textTransform: 'none', // Prevent text transformation
-                  '&:focus': {
-                    backgroundColor: '#5f1630', // Keep button color consistent on focus
-                    boxShadow: 'none', // Remove any focus outline
-                  },
-                }}
-              >
+              <Button variant="contained" onClick={onSubmit} sx={commonButtonStyles}>
                 Confirm
               </Button>
             )}

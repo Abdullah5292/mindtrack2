@@ -1,6 +1,8 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { Buffer } from "buffer";
+import { IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close'; // Material UI Close ico
 import { CircularProgress } from "@mui/material";
 import {
   Box,
@@ -78,49 +80,73 @@ const Page = (props) => {
     if (res) setData(res);
   };
 
+  const [modalImage, setModalImage] = useState(null);  // For the image URL
   const [openModal, setOpenModal] = useState(false);
   const [selectedLogo, setSelectedLogo] = useState("");
 
   // Function to close modal
-  const handleCloseModal = () => {
+  // Close modal function
+  const closeModal = () => {
     setOpenModal(false);
+    setModalImage(null); // Optionally reset the image when closing
   };
 
-  const ImageModalComponent = ({ fileName }) => {
-    const [imageSrc, setImageSrc] = useState("");
-    const [openModal, setOpenModal] = useState(false);
-  };
+  // const handleOpenModal = async (fileName) => {
+  //   try {
+  //     const file = await getFile(fileName);
+  //     console.log('File received:', file); // Log the entire file object to inspect its structure
+
+  //     if (!file || !file.Body) throw new Error("Invalid file object");
+
+  //     // Convert Body to buffer correctly
+  //     const buffer =
+  //       file.Body instanceof Uint8Array ? Buffer.from(file.Body) : await streamToBuffer(file.Body);
+
+  //     const base64 = buffer.toString("base64");
+  //     const mimeType = file.ContentType || "image/jpeg";
+  //     const imageSrc = `data:${mimeType};base64,${base64}`;
+
+  //     setImageSrc(imageSrc);
+  //     setOpenModal(true);
+  //   } catch (e) {
+  //     console.error("Error fetching image:", e);
+  //   }
+  // };
 
   const handleOpenModal = async (fileName) => {
     try {
-      const file = await getFile(fileName);
+      const result = await getFile(fileName); // Fetch file from S3 (make sure getFile is working)
+      if (result.success) {
+        const file = result.file;
 
-      if (!file || !file.Body) throw new Error("Invalid file object");
+        // Check if the file Body exists and is a valid Uint8Array
+        if (file.Body && file.ContentType) {
+          // Convert Uint8Array to Blob
+          const blob = new Blob([file.Body], { type: file.ContentType });
 
-      // Convert Body to buffer correctly
-      const buffer =
-        file.Body instanceof Uint8Array ? Buffer.from(file.Body) : await streamToBuffer(file.Body); // Fallback if it's a stream
+          // Debug: Check the Blob type and file details
+          console.log('Fetched file blob:', blob);
 
-      const base64 = buffer.toString("base64");
-      const mimeType = file.ContentType || "image/jpeg";
-      const imageSrc = `data:${mimeType};base64,${base64}`;
+          // Generate an object URL for the blob
+          const imageUrl = URL.createObjectURL(blob);
 
-      setImageSrc(imageSrc);
-      setOpenModal(true);
-    } catch (e) {
-      console.error("Error fetching image:", e);
+          // Debug: Log the image URL to ensure it's correct
+          console.log('Generated image URL:', imageUrl);
+
+          // Set the image URL in state and open the modal
+          setModalImage(imageUrl);
+          setOpenModal(true);
+        } else {
+          console.error('File body or content type is missing');
+        }
+      } else {
+        console.error('Failed to fetch file');
+      }
+    } catch (error) {
+      console.error('Error opening modal:', error);
     }
   };
 
-  // Only if file.Body is a stream (Node.js Readable stream)
-  const streamToBuffer = async (stream) => {
-    return new Promise((resolve, reject) => {
-      const chunks = [];
-      stream.on("data", (chunk) => chunks.push(chunk));
-      stream.on("end", () => resolve(Buffer.concat(chunks)));
-      stream.on("error", reject);
-    });
-  };
 
   useEffect(() => {
     getData("");
@@ -166,17 +192,20 @@ const Page = (props) => {
                       body: (
                         <DataForm
                           title="Add Institution"
+                          handleClose={props.closeDrawer}
+
                           onSubmit={async (v) => {
                             try {
-                              const logoName = await uploadFile(v.logo);
-                              if (logoName) {
+                              const result = await uploadFile(v.logo);
+
+                              if (result.success) {
                                 const res = await authenticatedAxios.post("/institutions/", {
                                   ...v,
-                                  logo: logoName,
+                                  logo: result.fileName, // ✅ use only the string
                                 });
                                 if (res.data.status) {
                                   await getMiscData();
-                                  props.closeModal();
+                                  props.closeDrawer();
                                 }
                               }
                             } catch (e) {
@@ -263,38 +292,81 @@ const Page = (props) => {
                               <TableCell>
                                 <Button
                                   disabled={institution.logo === ""}
-                                  onClick={() => handleOpenModal(institution.logo)}
+                                  onClick={() => handleOpenModal(institution.logo)} // Pass the logo file name
                                   variant="outlined"
                                   sx={{ color: "white", borderColor: "white" }}
                                 >
                                   View
                                 </Button>
 
+                                {/* Modal component */}
                                 <Modal
                                   open={openModal}
-                                  onClose={handleCloseModal}
-                                  aria-labelledby="image-modal-title"
-                                  aria-describedby="image-modal-description"
+                                  onClose={closeModal}
+                                  aria-labelledby="modal-title"
+                                  aria-describedby="modal-description"
                                 >
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      height: "100%",
+                                  {/* Background overlay with low opacity */}
+
+                                  {/* Modal content */}
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      justifyContent: 'center',
+                                      alignItems: 'center',
+                                      position: 'fixed', // Fixed position to make it centered on the page
+                                      top: '50%',
+                                      left: '50%',
+                                      transform: 'translate(-50%, -50%)',
+                                      backgroundColor: 'white',
+                                      padding: '20px',
+                                      borderRadius: '8px',
+                                      // boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                                      maxWidth: '30%',  // Modal width
+                                      maxHeight: '80%', // Modal height
+                                      overflowY: 'auto',
+                                      position: 'relative', // Allow the close button to be positioned absolutely
+                                      // Ensures the modal is above the overlay
                                     }}
                                   >
-                                    {imageSrc ? (
-                                      <img
-                                        src={imageSrc}
-                                        alt="S3 Image"
-                                        style={{ maxWidth: "90%", maxHeight: "90%" }}
-                                      />
-                                    ) : (
-                                      <p>Loading image...</p>
-                                    )}
-                                  </Box>
+                                    {/* Close button */}
+                                    <IconButton
+                                      onClick={closeModal}
+                                      style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                        color: '#000', // Black color for the close icon
+                                      }}
+                                    >
+                                      <CloseIcon />
+                                    </IconButton>
+
+                                    {/* Image content */}
+                                    <div style={{
+                                      display: 'flex',
+                                      justifyContent: 'center',
+                                      alignItems: 'center',
+                                      textAlign: 'center',
+                                    }}>
+                                      {modalImage ? (
+                                        <img
+                                          src={modalImage}
+                                          alt="Image from S3"
+                                          style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                            objectFit: 'contain', // Ensure the image fits within the container
+                                          }}
+                                        />
+                                      ) : (
+                                        <p>Loading image...</p>
+                                      )}
+                                    </div>
+                                  </div>
+
                                 </Modal>
+
                               </TableCell>
                               <TableCell sx={{ color: "white" }}>{institution.type.type}</TableCell>
                               <TableCell sx={{ color: "white" }}>
@@ -310,17 +382,25 @@ const Page = (props) => {
                                         body: (
                                           <DataForm
                                             title="Edit Institution"
+                                            handleClose={props.closeDrawer}
+
+
+
                                             onSubmit={async (v) => {
                                               try {
-                                                const logoName = await uploadFile(v.logo);
-                                                if (logoName) {
-                                                  const res = await authenticatedAxios.put(
-                                                    "/institutions/",
-                                                    v
-                                                  );
+                                                const result = await uploadFile(v.logo);
+
+                                                if (result.success) {
+                                                  const payload = {
+                                                    ...v,
+                                                    logo: result.fileName, // correctly attach logo
+                                                  };
+
+                                                  const res = await authenticatedAxios.put("/institutions/", payload);
+
                                                   if (res.data.status) {
                                                     await getMiscData();
-                                                    props.closeModal();
+                                                    props.closeDrawer();
                                                   }
                                                 }
                                               } catch (e) {
@@ -330,6 +410,7 @@ const Page = (props) => {
                                             initialValues={institution}
                                             institutionTypes={institutionTypes}
                                           />
+
                                         ),
                                       });
                                     }}
@@ -385,27 +466,8 @@ const Page = (props) => {
             </Card>
           </Stack>
         </Container>
-        <Modal open={openModal} onClose={handleCloseModal}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "auto",
-              bgcolor: "background.paper",
-              boxShadow: 24,
-              p: 4,
-            }}
-          >
-            <img
-              src={selectedLogo}
-              alt="Institution Logo"
-              style={{ maxWidth: "100%", maxHeight: "80vh" }}
-            />
-          </Box>
-        </Modal>
-      </Box>
+
+      </Box >
     </>
   );
 };
@@ -449,7 +511,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
       component="main"
       sx={{
         flexGrow: 1,
-        py: 8,
+        py: 1,
         px: 1,
         backgroundColor: "#FAEAF0",
         boxShadow: "none",
@@ -611,19 +673,7 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutionTypes = [] })
                       position: 'relative',
                     }}
                   >
-                    {formik.isSubmitting ? (
-                      <CircularProgress
-                        size={24}
-                        sx={{
-                          color: 'white',
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)', // Center the loader
-                          zIndex: 1300, // Higher z-index to make sure it appears above other components
-                        }}
-                      />
-                    ) : (
+                    {(
                       "Save details"
                     )}
                   </Button>
