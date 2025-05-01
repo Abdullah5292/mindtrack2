@@ -74,14 +74,14 @@ export const items = [
       </SvgIcon>
     ),
   },
-  {
-    title: "Settings",
-    path: "/settings",
-    requires: [],
-    icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
-        <CogIcon />
-      </SvgIcon>
-    ),
-  },
+  // {
+  //   title: "Settings",
+  //   path: "/settings",
+  //   requires: [],
+  //   icon: (
+  //     <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+  //       <CogIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
 ];
