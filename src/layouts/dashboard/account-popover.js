@@ -101,8 +101,9 @@ export const AccountPopover = (props) => {
           src={user?.profileImageUrl || "/default-avatar.png"} // Fallback if no image URL
           sx={{ width: 32, height: 32, marginRight: 1 }}
         />
+        {/* <pre>{JSON.stringify(user, null, 2)}</pre> */}
         <Typography variant="body2" color="text.secondary">
-          {user?.name || "User"}
+          {user?.user?.name || "User"}
         </Typography>
       </Box>
 

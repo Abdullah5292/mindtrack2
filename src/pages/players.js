@@ -1,51 +1,262 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { IconButton } from "@mui/material";
-import { VisibilityOff } from "@mui/icons-material";
-
-import {
-  Avatar,
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Container,
-  Divider,
-  FormControl,
-  Unstable_Grid2 as Grid,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Stack,
-  SvgIcon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
-  Typography,
-
-} from "@mui/material";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Container, Divider, FormControl, Grid, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Stack, SvgIcon, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { Fullscreen } from "lucide-react";
-import moment from "moment";
-import Head from "next/head";
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
-import { getInstitutions, getRoles, getUsers, getPlayers } from "src/utils/client";
+import { getPlayers, getPlayerById } from "src/utils/client";
 import { getInitials } from "src/utils/get-initials";
+import Image from "next/image";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
+import StatsDialog from "src/components/statsDialog";
+
+// Dummy player data with comprehensive statistics
+const dummyPlayers = [
+  {
+    id: 1,
+    displayName: "Sarah Johnson",
+    email: "sarah.j@university.edu",
+    education: 2,
+    createdAt: "2023-09-15T08:30:00Z",
+    profilePhoto: "/assets/avatars/avatar-1.png",
+    stats: {
+      overview: {
+        gamesPlayed: 45,
+        averageScore: 82.5,
+        highestScore: 98,
+        totalPlayTime: "32h 15m",
+        completionRate: 89,
+        rank: "Gold",
+        level: 15,
+        xpPoints: 3850,
+        nextLevelAt: 4000
+      },
+      skillLevels: {
+        problemSolving: 85,
+        criticalThinking: 92,
+        decisionMaking: 78,
+        timeManagement: 88,
+        adaptability: 90,
+        teamwork: 85
+      },
+      categoryPerformance: {
+        businessStrategy: 88,
+        finance: 82,
+        marketing: 90,
+        operations: 85,
+        leadership: 87,
+        innovation: 84
+      },
+      gameTypeStats: {
+        simulation: {
+          played: 20,
+          avgScore: 85,
+          highScore: 95,
+          timeSpent: "15h 20m"
+        },
+        puzzle: {
+          played: 15,
+          avgScore: 78,
+          highScore: 88,
+          timeSpent: "10h 45m"
+        },
+        strategy: {
+          played: 10,
+          avgScore: 92,
+          highScore: 98,
+          timeSpent: "6h 10m"
+        }
+      },
+      progressionStats: {
+        daily: {
+          gamesPlayed: [3, 4, 2, 5, 3, 4, 2], // Last 7 days
+          scores: [85, 88, 82, 90, 87, 89, 86],
+          timeSpent: ["1h", "1.5h", "45m", "2h", "1h", "1.5h", "1h"]
+        },
+        weekly: {
+          gamesPlayed: [15, 18, 12, 20], // Last 4 weeks
+          avgScores: [84, 86, 88, 87],
+          timeSpent: ["8h", "10h", "6h", "8h"]
+        },
+        monthly: {
+          gamesPlayed: [45, 52, 38, 48, 50, 55], // Last 6 months
+          avgScores: [82, 84, 86, 85, 88, 87],
+          timeSpent: ["32h", "38h", "28h", "35h", "36h", "40h"]
+        }
+      },
+      achievements: {
+        total: 28,
+        recent: [
+          {
+            id: 1,
+            name: "Strategy Master",
+            description: "Complete 10 strategy games with 90%+ score",
+            earnedAt: "2024-03-10",
+            rarity: "gold"
+          },
+          {
+            id: 2,
+            name: "Quick Thinker",
+            description: "Solve 5 puzzles under 2 minutes each",
+            earnedAt: "2024-03-08",
+            rarity: "silver"
+          }
+        ],
+        categories: {
+          gameplay: 10,
+          skill: 8,
+          social: 5,
+          special: 5
+        }
+      },
+      learningPath: {
+        currentLevel: "Advanced",
+        progress: 75,
+        recommendedGames: [
+          {
+            id: 1,
+            name: "Advanced Strategy Simulation",
+            difficulty: "Hard",
+            relevance: 95
+          },
+          {
+            id: 2,
+            name: "Leadership Challenge",
+            difficulty: "Medium",
+            relevance: 88
+          }
+        ],
+        completedCourses: [
+          {
+            id: 1,
+            name: "Basic Business Operations",
+            completedAt: "2024-01-15",
+            score: 92
+          },
+          {
+            id: 2,
+            name: "Intermediate Strategy",
+            completedAt: "2024-02-20",
+            score: 88
+          }
+        ]
+      },
+      socialStats: {
+        collaborations: 15,
+        teamGamesPlayed: 8,
+        leaderboardRank: 125,
+        peersBeaten: 450,
+        kudosReceived: 28,
+        teamworkRating: 4.5
+      },
+      recentActivity: {
+        games: [
+          {
+            date: "2024-03-10",
+            gameName: "Strategic Operations",
+            score: 88,
+            duration: "45m",
+            difficulty: "Hard",
+            skillsImproved: ["problemSolving", "decisionMaking"]
+          },
+          {
+            date: "2024-03-08",
+            gameName: "Market Simulator",
+            score: 92,
+            duration: "38m",
+            difficulty: "Medium",
+            skillsImproved: ["criticalThinking", "adaptability"]
+          }
+        ],
+        achievements: [
+          {
+            date: "2024-03-10",
+            type: "achievement",
+            name: "Strategy Master",
+            description: "Completed 10 strategy games with 90%+ score"
+          }
+        ],
+        levelUps: [
+          {
+            date: "2024-03-09",
+            type: "levelUp",
+            from: 14,
+            to: 15,
+            rewards: ["New Game Access", "Special Badge"]
+          }
+        ]
+      },
+      feedback: {
+        strengths: ["Strategic Thinking", "Quick Decision Making", "Team Leadership"],
+        areasForImprovement: ["Risk Management", "Resource Allocation"],
+        recommendedFocus: "Advanced Risk Management Scenarios"
+      }
+    }
+  },
+  {
+    id: 2,
+    displayName: "Michael Chen",
+    email: "m.chen@university.edu",
+    education: 3,
+    createdAt: "2023-10-01T09:15:00Z",
+    profilePhoto: "/assets/avatars/avatar-2.png",
+    stats: {
+      gamesPlayed: 38,
+      averageScore: 88.2,
+      highestScore: 100,
+      totalPlayTime: "28h 45m",
+      completionRate: 94,
+      skillLevels: {
+        problemSolving: 94,
+        criticalThinking: 88,
+        decisionMaking: 85
+      },
+      recentGames: [
+        { date: "2024-03-11", score: 95, duration: "40m" },
+        { date: "2024-03-09", score: 88, duration: "35m" },
+        { date: "2024-03-07", score: 92, duration: "42m" }
+      ],
+      progressOverTime: [
+        { month: "Jan", score: 82 },
+        { month: "Feb", score: 87 },
+        { month: "Mar", score: 92 }
+      ]
+    }
+  },
+  {
+    id: 3,
+    displayName: "Emma Davis",
+    email: "e.davis@university.edu",
+    education: 1,
+    createdAt: "2023-11-20T14:20:00Z",
+    profilePhoto: "/assets/avatars/avatar-3.png",
+    stats: {
+      gamesPlayed: 52,
+      averageScore: 79.8,
+      highestScore: 95,
+      totalPlayTime: "38h 30m",
+      completionRate: 85,
+      skillLevels: {
+        problemSolving: 82,
+        criticalThinking: 85,
+        decisionMaking: 88
+      },
+      recentGames: [
+        { date: "2024-03-12", score: 85, duration: "48m" },
+        { date: "2024-03-10", score: 82, duration: "44m" },
+        { date: "2024-03-08", score: 88, duration: "40m" }
+      ],
+      progressOverTime: [
+        { month: "Jan", score: 72 },
+        { month: "Feb", score: 78 },
+        { month: "Mar", score: 84 }
+      ]
+    }
+  }
+];
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -53,6 +264,28 @@ const Page = (props) => {
   const [data, setData] = useState([]);
   const [roles, setRoles] = useState([]);
   const [institutions, setInstitutions] = useState([]);
+
+  const [openStatsDialog, setOpenStatsDialog] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+
+  const [playerDetails, setPlayerDetails] = useState(null);
+
+  const handleOpenStatsDialog = (player) => {
+    setSelectedPlayer(player);
+    setPlayerDetails(player.stats); // Use the dummy stats directly
+    setOpenStatsDialog(true);
+  };
+
+  const handleCloseStatsDialog = () => {
+    setOpenStatsDialog(false);
+    setPlayerDetails(null);
+  };
+
+  const educationMap = {
+    1: "Business",
+    2: "Social Sciences",
+    3: "CS & Math"
+  };
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
@@ -62,40 +295,22 @@ const Page = (props) => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  const getData = async () => {
-    const res = await getPlayers();
-    if (res) setData(res);
-
-    const roleRes = await getRoles();
-    if (roleRes) setRoles(roleRes);
-
-    const instRes = await getInstitutions();
-    if (instRes) setInstitutions(instRes);
-  };
-
+  // Use dummy data instead of API call
   useEffect(() => {
-    getData();
+    setData(dummyPlayers);
   }, []);
 
   return (
-
     <div className="flex flex-col w-full h-full relative">
-
       <Image
         src="/assets/Background.svg"
         alt="Background"
-        layout="fill" // Makes it cover the full parent div
-        objectFit="cover" // Ensures it scales properly
-        priority // Loads the image faster
+        fill
+        style={{ objectFit: "cover" }}
+        priority
       />
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 5,
-        }}
-      >
+      <Box component="main" sx={{ flexGrow: 1, py: 5 }}>
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
@@ -103,36 +318,6 @@ const Page = (props) => {
                 <Typography variant="h4" sx={{ color: "white", zIndex: 140 }}>Players</Typography>
               </Stack>
               <div>
-                {/* <Button
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                  sx={{ backgroundColor: '#24A374' }}
-                  onClick={() => {
-                    props.openDrawer({
-                      width: "30vw",
-                      body: (
-                        <DataForm
-                          title="Add User"
-                          onSubmit={async (v) => {
-                            const res = await authenticatedAxios.post("/users/", v);
-                            if (res.data.status) {
-                              await getData();
-                              props.closeDrawer();
-                            }
-                          }}
-                          institutions={institutions}
-                          roles={roles}
-                        />
-                      ),
-                    });
-                  }}
-                >
-                  Add User
-                </Button> */}
 
               </div>
             </Stack>
@@ -140,7 +325,7 @@ const Page = (props) => {
               <OutlinedInput
                 defaultValue=""
                 fullWidth
-                placeholder="Search Users"
+                placeholder="Search Players"
                 startAdornment={
                   <InputAdornment position="start">
                     <SvgIcon color="action" fontSize="small">
@@ -163,21 +348,20 @@ const Page = (props) => {
                     backgroundColor: 'white',
                   },
                   '& fieldset': {
-                    border: 'none !important', // Completely removes border
+                    border: 'none !important',
                   },
                   '&:hover fieldset': {
                     border: 'none !important',
                   },
                   '&.Mui-focused': {
-                    backgroundColor: 'white !important', // Keeps background white when focused
+                    backgroundColor: 'white !important',
                   },
                   '&.Mui-focused fieldset': {
-                    border: 'none !important', // No border even when focused
+                    border: 'none !important',
                   },
                 }}
               />
             </Card>
-
             <Card>
               <Scrollbar>
                 <Box sx={{ minWidth: 800 }}>
@@ -186,216 +370,82 @@ const Page = (props) => {
                       <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}>
                         <TableCell sx={{ color: "transparent", borderBottom: "none" }} align="left">Name</TableCell>
                         <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Email</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Institution</TableCell>
-                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Role</TableCell>
+                        <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Education</TableCell>
                         <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Created At</TableCell>
                         <TableCell sx={{ color: "transparent", borderBottom: "none" }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {Array.isArray(data) &&
-                        data.map((user) => (
-                          <TableRow key={user.id} sx={{ backgroundColor: "transparent", borderBottom: "none" }}>
+                        data.map((player) => (
+                          <TableRow key={player.id} sx={{ backgroundColor: "transparent", borderBottom: "none" }}>
                             <TableCell sx={{ color: "white" }}>
                               <Stack alignItems="center" direction="row" spacing={2}>
-                                <Avatar src={user?.avatar}>{getInitials(user.name)}</Avatar>
+                                <Avatar src={player?.profilePhoto}>{getInitials(player.displayName)}</Avatar>
                                 <Typography variant="subtitle2" sx={{ color: "white" }}>
-                                  {user.name}
+                                  {player.displayName}
                                 </Typography>
                               </Stack>
                             </TableCell>
-                            <TableCell sx={{ color: "white" }}>{user.email}</TableCell>
-                            <TableCell sx={{ color: "white" }}>{user.institution.name}</TableCell>
-                            <TableCell sx={{ color: "white" }}>{user.role.name}</TableCell>
-                            <TableCell sx={{ color: "white" }}>{moment(user.createdAt).toLocaleString()}</TableCell>
-                            <TableCell>
-                              <ButtonGroup variant="contained">
-                                <Button
-                                  color="warning"
-                                  onClick={() => {
-                                    props.openDrawer({
-                                      width: "30vw",
-                                      body: (
-                                        <DataForm
-                                          title="Edit User"
-                                          onSubmit={async (v) => {
-                                            const res = await authenticatedAxios.put("/users/", v);
-                                            if (res.data.status) {
-                                              await getData();
-                                              props.closeDrawer();
-                                            }
-                                          }}
-                                          initialValues={user}
-                                          institutions={institutions}
-                                          roles={roles}
-                                        />
-                                      ),
-                                    });
-                                  }}
-                                >
-                                  View Stats
-                                </Button>
+                            <TableCell sx={{ color: "white" }}>{player.email}</TableCell>
+                            <TableCell sx={{ color: "white" }}>
+                              {educationMap[player.education] || "N/A"}
+                            </TableCell>
 
-                              </ButtonGroup>
+                            <TableCell sx={{ color: "white" }}>
+                              {new Date(player.createdAt).toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                  backgroundColor: '#5f1630',
+                                  '&:hover': {
+                                    backgroundColor: '#4d0e26',
+                                  },
+                                  '&:active': {
+                                    backgroundColor: '#4d0e26',
+                                  },
+                                }}
+                                onClick={() => handleOpenStatsDialog(player)}
+                              >
+                                View Stats
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
                     </TableBody>
                   </Table>
                 </Box>
-
               </Scrollbar>
               <TablePagination
                 component="div"
                 count={data.length}
                 sx={{ borderTop: "none", backgroundColor: "transparent", color: "white" }}
-                // onPageChange={onPageChange}
-                // onRowsPerPageChange={onRowsPerPageChange}
                 page={page}
                 rowsPerPage={rowsPerPage}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
                 rowsPerPageOptions={[5, 10, 25]}
               />
             </Card>
           </Stack>
         </Container>
-      </Box >
-    </div >
+      </Box>
+      {selectedPlayer && (
+        <StatsDialog
+          open={openStatsDialog}
+          onClose={handleCloseStatsDialog}
+          playerData={playerDetails}
+        />
+      )}
+    </div>
   );
 };
 
+// Wrapping with Modal and Drawer
 const ModalWrapped = WithModal(Page);
 const DrawerWrapped = WithDrawer(ModalWrapped);
 DrawerWrapped.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
 export default DrawerWrapped;
-const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles = [] }) => {
-  const formik = useFormik({
-    initialValues: {
-      id: initialValues?.id || 0,
-      email: initialValues?.email || "",
-      name: initialValues?.name || "",
-      password: initialValues?.password || "",
-      institutionId: initialValues?.institutionId || 0,
-      roleId: initialValues?.roleId || 0,
-    },
-    onSubmit,
-  });
-
-  return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        py: 8,
-        px: 1, // Padding for spacing
-        backgroundColor: "#FAEAF0", // Keep background for main section
-        boxShadow: "none", // No shadow
-        border: "none", // No border
-      }}
-    >
-      <Container maxWidth="xl">
-        <Stack spacing={3}>
-          <div>
-            <Typography variant="h4" sx={{ color: "#601631" }}>
-              {formTitle}
-            </Typography>
-          </div>
-          <div>
-            <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
-              {/* Removed Card and its content */}
-              <div>
-                <CardHeader
-                  subheader="The information can be edited"
-                  title="User Data"
-                  sx={{ color: "#601631" }} // Text color
-                />
-                <CardContent sx={{ pt: 0 }}>
-                  <Box sx={{ m: -1.5 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Name"
-                          name="name"
-                          onChange={formik.handleChange}
-                          required
-                          value={formik.values.name}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Email Address"
-                          name="email"
-                          onChange={formik.handleChange}
-                          required
-                          value={formik.values.email}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Password"
-                          name="password"
-                          type="password"
-                          onChange={formik.handleChange}
-                          required
-                          value={formik.values.password}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id="label-institution">Institution</InputLabel>
-                          <Select
-                            fullWidth
-                            labelId="label-institution"
-                            label="Select Institution"
-                            name="institutionId"
-                            onChange={formik.handleChange}
-                            required
-                            value={formik.values.institutionId}
-                          >
-                            {institutions.map((option) => (
-                              <MenuItem key={option.value} value={option.id}>
-                                {option.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControl fullWidth>
-                          <InputLabel id="label-role">Role</InputLabel>
-                          <Select
-                            fullWidth
-                            labelId="label-role"
-                            label="Select Role"
-                            name="roleId"
-                            onChange={formik.handleChange}
-                            required
-                            value={formik.values.roleId}
-                          >
-                            {roles.map((option) => (
-                              <MenuItem key={option.value} value={option.id}>
-                                {option.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </CardContent>
-                <CardActions sx={{ justifyContent: "center" }}>
-                  <Button variant="contained" type="submit" sx={{ backgroundColor: "#601631", color: "white", padding: "10px 60px" }}>
-                    Save details
-                  </Button>
-                </CardActions>
-              </div>
-            </form>
-          </div>
-        </Stack>
-      </Container>
-    </Box>
-  );
-};

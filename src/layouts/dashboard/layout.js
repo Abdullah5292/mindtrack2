@@ -45,16 +45,29 @@ export const Layout = withAuthGuard((props) => {
         position: 'relative',
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#8d1f47', // Fallback background color
+        backgroundColor: '#8d1f47',
+        overflowY: 'none' // Fallback background color
       }}
     >
-      <Image
+      {/* <Image
         src="/assets/Background.svg"
         alt="Background"
         layout="fill"
         objectFit="cover"
-        priority
+        height: "100%"
+      width: "100%"
+      priority
+      /> */}
+
+
+      <Image
+        src="/assets/Background.svg"
+        alt="Your image"
+        fill
+        style={{ objectFit: 'cover', width: '100%', height: '100%' }} // or 'contain'
       />
+
+
       <TopNav onNavOpen={() => setOpenNav(true)} />
       <SideNav
         onClose={() => setOpenNav(false)}

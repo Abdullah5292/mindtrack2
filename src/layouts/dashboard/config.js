@@ -8,15 +8,13 @@ import CogIcon from "@heroicons/react/24/solid/CogIcon";
 import ArrowLeftOnRectangleIcon from "@heroicons/react/24/solid/ArrowLeftOnRectangleIcon";
 import { SvgIcon } from "@mui/material";
 
-const iconColor = "#F3C9D8"; // Default color
-
 export const items = [
   {
     title: "Overview",
     path: "/",
     requires: [],
     icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+      <SvgIcon fontSize="small">
         <ChartBarIcon />
       </SvgIcon>
     ),
@@ -26,30 +24,27 @@ export const items = [
     path: "/users",
     requires: ["user-view"],
     icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+      <SvgIcon fontSize="small">
         <UsersIcon />
       </SvgIcon>
     ),
   },
-
   {
     title: "Institutions",
     path: "/institutions",
-
     requires: ["institutions-view"],
     icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+      <SvgIcon fontSize="small">
         <BuildingLibraryIcon />
       </SvgIcon>
     ),
   },
-
   {
     title: "Games",
     path: "/games",
     requires: ["game-view"],
     icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+      <SvgIcon fontSize="small">
         <PuzzlePieceIcon />
       </SvgIcon>
     ),
@@ -59,7 +54,7 @@ export const items = [
     path: "/roles",
     requires: ["role-view"],
     icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+      <SvgIcon fontSize="small">
         <UserGroupIcon />
       </SvgIcon>
     ),
@@ -69,7 +64,7 @@ export const items = [
     path: "/players",
     requires: [],
     icon: (
-      <SvgIcon fontSize="small" sx={{ color: iconColor }}>
+      <SvgIcon fontSize="small">
         <UserCircleIcon />
       </SvgIcon>
     ),

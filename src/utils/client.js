@@ -42,7 +42,13 @@ export const getInstitutionTypes = async () => {
   return false;
 };
 export const getPlayers = async (search) => {
-  const response = await authenticatedAxios.get("/players//", { params: { search } });
+  const response = await authenticatedAxios.get("/players/", { params: { search } });
   if (response.data?.status) return response.data.data;
   return false;
 }
+export const getPlayerById = async (id) => {
+  const response = await authenticatedAxios.post("/players/${id}");
+  if (response.data?.status) return response.data.data;
+  return false;
+}
+

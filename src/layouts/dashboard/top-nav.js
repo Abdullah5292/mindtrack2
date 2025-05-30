@@ -33,7 +33,6 @@ export const TopNav = (props) => {
       <Box
         component="header"
         sx={{
-          backdropFilter: 'blur(6px)',
           backgroundColor: (theme) => alpha(theme.palette.background.default, 0),
           position: 'sticky',
           left: {
