@@ -20,6 +20,9 @@ import { Layout as AuthLayout } from "src/layouts/auth/layout";
 import { loginUser } from "src/redux/reducers/user";
 import { unauthenticatedAxios } from "src/utils/axios";
 import * as Yup from "yup";
+import getConfig from "next/config";
+
+const config = getConfig();
 
 const Page = () => {
   const router = useRouter();
@@ -40,10 +43,16 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        const response = await unauthenticatedAxios.post("/admin/sign-in", {
-          email: values.email,
-          password: values.password,
+        const response = await unauthenticatedAxios({
+          method: "POST",
+          baseURL: config.publicRuntimeConfig.user,
+          url: "/admin/sign-in",
+          data: { email: values.email, password: values.password },
         });
+        // const response = await unauthenticatedAxios.post("/admin/sign-in", {
+        //   email: values.email,
+        //   password: values.password,
+        // });
         if (response.data.status) {
           dispatch(loginUser(response.data.data));
           router.push("/");
@@ -97,15 +106,14 @@ const Page = () => {
               InputLabelProps={{ style: { color: "white" } }}
               variant="standard"
               sx={{
-                '& input:-webkit-autofill': {
-                  WebkitBoxShadow: '0 0 0 1000px transparent inset',
-                  WebkitTextFillColor: 'white',
-                  caretColor: 'white',
-                  transition: 'background-color 5000s ease-in-out 0s',
+                "& input:-webkit-autofill": {
+                  WebkitBoxShadow: "0 0 0 1000px transparent inset",
+                  WebkitTextFillColor: "white",
+                  caretColor: "white",
+                  transition: "background-color 5000s ease-in-out 0s",
                 },
               }}
             />
-
 
             {/* Password Field */}
             <Box>
@@ -129,11 +137,7 @@ const Page = () => {
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleTogglePassword}
-                        edge="end"
-                        sx={{ color: "white" }}
-                      >
+                      <IconButton onClick={handleTogglePassword} edge="end" sx={{ color: "white" }}>
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -142,18 +146,18 @@ const Page = () => {
                 InputLabelProps={{ style: { color: "white" } }}
                 variant="standard"
                 sx={{
-                  '& .MuiInputBase-root': {
-                    color: 'white',
-                    borderBottom: '1px solid white',
+                  "& .MuiInputBase-root": {
+                    color: "white",
+                    borderBottom: "1px solid white",
                   },
-                  '& input': {
-                    color: 'white',
+                  "& input": {
+                    color: "white",
                   },
-                  '& input:-webkit-autofill': {
-                    WebkitBoxShadow: '0 0 0 1000px transparent inset',
-                    WebkitTextFillColor: 'white',
-                    caretColor: 'white',
-                    transition: 'background-color 5000s ease-in-out 0s',
+                  "& input:-webkit-autofill": {
+                    WebkitBoxShadow: "0 0 0 1000px transparent inset",
+                    WebkitTextFillColor: "white",
+                    caretColor: "white",
+                    transition: "background-color 5000s ease-in-out 0s",
                   },
                 }}
               />

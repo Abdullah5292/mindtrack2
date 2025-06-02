@@ -7,9 +7,9 @@ import { setLoading } from "src/redux/reducers/settings";
 
 const config = getConfig();
 
-const baseConfig = {
-  baseURL: config.publicRuntimeConfig.backend,
-};
+// const baseConfig = {
+//   baseURL: config.publicRuntimeConfig.backend,
+// };
 
 const onResponseSuccess = (response) => {
   store.dispatch(setLoading(false));
