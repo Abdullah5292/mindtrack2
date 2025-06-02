@@ -1,7 +1,7 @@
 import { authenticatedAxios } from "./axios";
 
 export const getUsers = async (search) => {
-  const response = await authenticatedAxios.get("/users/", { params: { search } });
+  const response = await authenticatedAxios.get("/admin/users/", { params: { search } });
   if (response.data?.status) return response.data.data;
   return false;
 };

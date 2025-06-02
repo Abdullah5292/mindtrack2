@@ -39,7 +39,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
-import { getInstitutions, getRoles, getUsers } from "src/utils/client";
+import { getInstitutions, getRoles } from "src/utils/client";
+import { getUsers, createUser, updateUser, deleteUser } from "srcutils/usersClient";
 import { getInitials } from "src/utils/get-initials";
 import { hasPermission } from "src/utils/utils";
 import WithDrawer from "src/utils/with-drawer";
@@ -141,7 +142,7 @@ const Page = (props) => {
                             handleClose={props.closeDrawer}
                             onSubmit={async (v) => {
                               try {
-                                const res = await authenticatedAxios.post("/users/", v);
+                                const res = await createUser(v);
 
                                 if (res.data.status) {
                                   await getData("");
@@ -273,7 +274,7 @@ const Page = (props) => {
                                                 console.log("Submitting data:", v); // Debugging
 
                                                 try {
-                                                  const res = await authenticatedAxios.put("/users/", v);
+                                                  const res = await updateUser(user.id, v);
                                                   console.log("Response:", res.data); // Debugging
 
                                                   if (res.data.status) {
@@ -308,9 +309,7 @@ const Page = (props) => {
                                           showSubmit: true,
                                           showCancel: true,
                                           onSubmit: async () => {
-                                            const res = await authenticatedAxios.delete("/users/", {
-                                              data: { userId: user.id },
-                                            });
+                                            const res = await deleteUser(user.id);
                                             if (res.data.status) {
                                               await getData();
                                               props.closeModal();

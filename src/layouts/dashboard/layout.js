@@ -46,7 +46,7 @@ export const Layout = withAuthGuard((props) => {
         width: '100vw',
         height: '100vh',
         backgroundColor: '#8d1f47',
-        overflowY: 'none' // Fallback background color
+        overflowY: 'hidden' // Fallback background color
       }}
     >
       {/* <Image
