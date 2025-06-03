@@ -46,6 +46,9 @@ import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
 import * as Yup from "yup";
 
+// Use NEXT_PUBLIC_ prefix for env variables to expose them to the browser in Next.js
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND;
+
 const Page = (props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -62,16 +65,21 @@ const Page = (props) => {
   }, []);
 
   const getData = async (search) => {
-    const res = await getUsers(search);
-    if (res) setData(res);
+    const res = await authenticatedAxios({
+      method: "GET",
+      baseURL: BACKEND,
+      url: "/users/",
+      params: search ? { search } : {},
+    });
+    if (res && res.data && Array.isArray(res.data.data)) setData(res.data.data);
   };
 
   const getMiscData = async () => {
-    const roleRes = await getRoles();
-    if (roleRes) setRoles(roleRes);
+    const roleRes = await authenticatedAxios({ method: "GET", baseURL: BACKEND, url: "/roles/" });
+    if (roleRes && roleRes.data && Array.isArray(roleRes.data.data)) setRoles(roleRes.data.data);
 
-    const instRes = await getInstitutions();
-    if (instRes) setInstitutions(instRes);
+    const instRes = await authenticatedAxios({ method: "GET", baseURL: BACKEND, url: "/institutions/" });
+    if (instRes && instRes.data && Array.isArray(instRes.data.data)) setInstitutions(instRes.data.data);
   };
 
   useEffect(() => {

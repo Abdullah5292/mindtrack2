@@ -2,7 +2,7 @@ module.exports = {
   reactStrictMode: true,
   output: "standalone",
   publicRuntimeConfig: {
-    backend: process.env.BACKEND,
+    backend: process.env.NEXT_PUBLIC_BACKEND,
     awsS3Bucket: process.env.AWS_S3_BUCKET,
     awsRegion: process.env.AWS_REGION,
     awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
