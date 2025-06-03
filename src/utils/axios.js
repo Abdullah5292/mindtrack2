@@ -8,7 +8,7 @@ import { setLoading } from "src/redux/reducers/settings";
 const config = getConfig();
 
 const baseConfig = {
-  baseURL: config.publicRuntimeConfig.backend,
+  baseURL: process.env.BACKEND
 };
 
 const onResponseSuccess = (response) => {

@@ -40,7 +40,7 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        const response = await unauthenticatedAxios.post("/admin/sign-in", {
+        const response = await unauthenticatedAxios.post("/auth/sign-in", {
           email: values.email,
           password: values.password,
         });
