@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const usersClient = axios.create({
-  baseURL: 'http://localhost:3001/admin/users',
+  baseURL: 'http://ec2-15-207-88-59.ap-south-1.compute.amazonaws.com:3001/admin/users',
   headers: {
     'Content-Type': 'application/json',
   },

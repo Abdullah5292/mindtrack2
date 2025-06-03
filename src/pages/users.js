@@ -40,12 +40,16 @@ import { Scrollbar } from "src/components/scrollbar";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { authenticatedAxios } from "src/utils/axios";
 import { getInstitutions, getRoles } from "src/utils/client";
-import { getUsers, createUser, updateUser, deleteUser } from "srcutils/usersClient";
+import { getUsers, createUser, updateUser, deleteUser } from "src/utils/usersClient";
 import { getInitials } from "src/utils/get-initials";
 import { hasPermission } from "src/utils/utils";
 import WithDrawer from "src/utils/with-drawer";
 import WithModal from "src/utils/with-modal";
 import * as Yup from "yup";
+
+// Use NEXT_PUBLIC_ prefix for env variables to expose them to the browser in Next.js
+const USER_SERVICE = process.env.NEXT_PUBLIC_USER_SERVICE;
+const INSTITUTION_SERVICE = process.env.NEXT_PUBLIC_INSTITUTION_SERVICE;
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -63,16 +67,31 @@ const Page = (props) => {
   }, []);
 
   const getData = async (search) => {
-    const res = await getUsers(search);
-    if (res) setData(res);
+    try {
+      const response = await authenticatedAxios({
+        method: "GET",
+        baseURL: USER_SERVICE,
+        url: "/admin/users",
+        params: search ? { search } : {},
+      });
+      if (response.data.status) setData(response.data.data);
+    } catch (err) {
+      console.error(err);
+      // Optionally set error state here
+    }
   };
 
   const getMiscData = async () => {
-    const roleRes = await getRoles();
-    if (roleRes) setRoles(roleRes);
-
-    const instRes = await getInstitutions();
-    if (instRes) setInstitutions(instRes);
+    try {
+      const [roleRes, instRes] = await Promise.all([
+        authenticatedAxios({ method: "GET", baseURL: USER_SERVICE, url: "/admin/roles" }),
+        authenticatedAxios({ method: "GET", baseURL: INSTITUTION_SERVICE, url: "/" })
+      ]);
+      if (roleRes.data.status) setRoles(roleRes.data.data);
+      if (instRes.data.status) setInstitutions(instRes.data.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -142,10 +161,15 @@ const Page = (props) => {
                             handleClose={props.closeDrawer}
                             onSubmit={async (v) => {
                               try {
-                                const res = await createUser(v);
-
-                                if (res.data.status) {
+                                const response = await authenticatedAxios({
+                                  method: "POST",
+                                  baseURL: USER_SERVICE,
+                                  url: "/admin/users",
+                                  data: v,
+                                });
+                                if (response.data.status) {
                                   await getData("");
+                                  await getMiscData();
                                   props.closeDrawer();
                                 }
                               } catch (e) {
@@ -251,8 +275,8 @@ const Page = (props) => {
                               </Stack>
                             </TableCell>
                             <TableCell sx={{ color: "white" }}>{user.email}</TableCell>
-                            <TableCell sx={{ color: "white" }}>{user.institution.name}</TableCell>
-                            <TableCell sx={{ color: "white" }}>{user.role.name}</TableCell>
+                            <TableCell sx={{ color: "white" }}>{institutions.find(i => i.id === user.institutionId)?.name || "-"}</TableCell>
+                            <TableCell sx={{ color: "white" }}>{user.role?.name}</TableCell>
                             <TableCell sx={{ color: "white" }}>
                               {moment(user.createdAt).toLocaleString()}
                             </TableCell>
@@ -271,20 +295,20 @@ const Page = (props) => {
                                               title="Edit User"
                                               handleClose={props.closeDrawer}
                                               onSubmit={async (v) => {
-                                                console.log("Submitting data:", v); // Debugging
-
                                                 try {
-                                                  const res = await updateUser(user.id, v);
-                                                  console.log("Response:", res.data); // Debugging
-
-                                                  if (res.data.status) {
+                                                  const response = await authenticatedAxios({
+                                                    method: "PUT",
+                                                    baseURL: USER_SERVICE,
+                                                    url: "/admin/users",
+                                                    data: v,
+                                                  });
+                                                  if (response.data.status) {
                                                     await getData("");
+                                                    await getMiscData();
                                                     props.closeDrawer();
-                                                  } else {
-                                                    console.error("Update failed:", res.data);
                                                   }
                                                 } catch (e) {
-                                                  console.error("Error updating user:", e);
+                                                  console.error(e);
                                                 }
                                               }}
                                               initialValues={user}
@@ -309,10 +333,20 @@ const Page = (props) => {
                                           showSubmit: true,
                                           showCancel: true,
                                           onSubmit: async () => {
-                                            const res = await deleteUser(user.id);
-                                            if (res.data.status) {
-                                              await getData();
-                                              props.closeModal();
+                                            try {
+                                              const response = await authenticatedAxios({
+                                                method: "DELETE",
+                                                baseURL: USER_SERVICE,
+                                                url: "/admin/users",
+                                                data: { userId: user.id },
+                                              });
+                                              if (response.data.status) {
+                                                await getData("");
+                                                await getMiscData();
+                                                props.closeModal();
+                                              }
+                                            } catch (e) {
+                                              console.error(e);
                                             }
                                           },
                                         });
@@ -374,9 +408,24 @@ const DataForm = ({ formTitle, onSubmit, initialValues, institutions = [], roles
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const res = await onSubmit(values); // await outer submit
-        if (res?.status && handleClose) {
-          handleClose(); // ✅ auto-close drawer after success
+        let response;
+        if (values.id) {
+          response = await authenticatedAxios({
+            method: "PUT",
+            baseURL: USER_SERVICE,
+            url: "/admin/users",
+            data: values,
+          });
+        } else {
+          response = await authenticatedAxios({
+            method: "POST",
+            baseURL: USER_SERVICE,
+            url: "/admin/users",
+            data: values,
+          });
+        }
+        if (response.data.status && handleClose) {
+          handleClose();
         }
       } catch (err) {
         console.error("Submit error:", err);

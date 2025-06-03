@@ -30,8 +30,8 @@ const onResponseError = (response) => {
   return response;
 };
 
-export const unauthenticatedAxios = axios.create(baseConfig);
-export const authenticatedAxios = axios.create(baseConfig);
+export const unauthenticatedAxios = axios.create();
+export const authenticatedAxios = axios.create();
 
 unauthenticatedAxios.interceptors.request.use((config) => {
   store.dispatch(setLoading(true));
