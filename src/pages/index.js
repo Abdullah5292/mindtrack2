@@ -28,6 +28,9 @@ import {
   Cell,
 } from 'recharts';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import { useRouter } from "next/navigation";
+import { hasPermission } from "src/utils/utils";
+import { authenticatedAxios } from "src/utils/axios";
 
 // Color palette
 const colors = {
@@ -66,9 +69,9 @@ const locationData = [
 
 const locationColors = ['#4A63E7', '#FF8042', '#E74A6C'];
 
-const StatCard = ({ title, value, icon, iconBg }) => (
-  <Card 
-    sx={{ 
+const StatCard = ({ title, value, icon, iconBg, onArrowClick, arrowEnabled }) => (
+  <Card
+    sx={{
       bgcolor: colors.cardBg,
       borderRadius: 4,
       height: '100%',
@@ -77,7 +80,7 @@ const StatCard = ({ title, value, icon, iconBg }) => (
     }}
   >
     <CardContent sx={{ p: 3 }}>
-      <Box 
+      <Box
         sx={{
           position: 'absolute',
           top: 20,
@@ -99,14 +102,16 @@ const StatCard = ({ title, value, icon, iconBg }) => (
       <Typography variant="body1" sx={{ color: colors.textSecondary }}>
         {title}
       </Typography>
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           display: 'flex',
           alignItems: 'center',
           mt: 2,
-          cursor: 'pointer',
-          '&:hover': { opacity: 0.8 }
+          cursor: arrowEnabled ? 'pointer' : 'default',
+          opacity: arrowEnabled ? 1 : 0.5,
+          '&:hover': { opacity: arrowEnabled ? 0.8 : 0.5 }
         }}
+        onClick={arrowEnabled ? onArrowClick : undefined}
       >
         <Typography variant="body2" sx={{ color: colors.text }}>
           View more
@@ -119,9 +124,44 @@ const StatCard = ({ title, value, icon, iconBg }) => (
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
+  const [questionCount, setQuestionCount] = useState(null);
+  const [gameCount, setGameCount] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000);
+    // Fetch question count
+    const fetchQuestions = async () => {
+      try {
+        const res = await authenticatedAxios.get("/questions/");
+        if (res.data && Array.isArray(res.data.data)) {
+          setQuestionCount(res.data.data.length);
+        } else if (res.data && Array.isArray(res.data)) {
+          setQuestionCount(res.data.length);
+        } else {
+          setQuestionCount(0);
+        }
+      } catch (e) {
+        setQuestionCount(0);
+      }
+    };
+    // Fetch game count
+    const fetchGames = async () => {
+      try {
+        const res = await authenticatedAxios.get("/games/");
+        if (res.data && Array.isArray(res.data.data)) {
+          setGameCount(res.data.data.length);
+        } else if (res.data && Array.isArray(res.data)) {
+          setGameCount(res.data.length);
+        } else {
+          setGameCount(0);
+        }
+      } catch (e) {
+        setGameCount(0);
+      }
+    };
+    fetchQuestions();
+    fetchGames();
     return () => clearTimeout(timer);
   }, []);
 
@@ -153,17 +193,21 @@ const Dashboard = () => {
         <Grid item xs={12} md={4}>
           <StatCard
             title="GAMES"
-            value="41"
+            value={gameCount === null ? <CircularProgress size={24} sx={{ color: colors.secondary }} /> : gameCount}
             icon={<SportsEsports sx={{ color: '#fff', fontSize: 28 }} />}
             iconBg={colors.secondary}
+            onArrowClick={() => router.push('/games')}
+            arrowEnabled={hasPermission('game-view')}
           />
         </Grid>
         <Grid item xs={12} md={4}>
           <StatCard
             title="QUESTIONS"
-            value="941"
+            value={questionCount === null ? <CircularProgress size={24} sx={{ color: colors.tertiary }} /> : questionCount}
             icon={<QuestionAnswer sx={{ color: '#fff', fontSize: 28 }} />}
             iconBg={colors.tertiary}
+            onArrowClick={() => router.push('/questions')}
+            arrowEnabled={hasPermission('questions-view')}
           />
         </Grid>
 
@@ -175,9 +219,9 @@ const Dashboard = () => {
                 <Typography variant="h6" sx={{ color: colors.text, fontWeight: 600 }}>
                   Player Statistics
                 </Typography>
-                <IconButton 
-                  size="small" 
-                  sx={{ 
+                <IconButton
+                  size="small"
+                  sx={{
                     color: colors.textSecondary,
                     '&:hover': { color: colors.text }
                   }}
@@ -189,22 +233,22 @@ const Dashboard = () => {
               <Box sx={{ height: 400 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={playerStats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                    <CartesianGrid 
-                      strokeDasharray="3 3" 
+                    <CartesianGrid
+                      strokeDasharray="3 3"
                       stroke={colors.chartGrid}
                       vertical={false}
                     />
-                    <XAxis 
-                      dataKey="month" 
+                    <XAxis
+                      dataKey="month"
                       stroke={colors.textSecondary}
                       tick={{ fill: colors.textSecondary }}
                     />
-                    <YAxis 
+                    <YAxis
                       stroke={colors.textSecondary}
                       tick={{ fill: colors.textSecondary }}
                     />
                     <RechartsTooltip
-                      contentStyle={{ 
+                      contentStyle={{
                         backgroundColor: colors.cardBg,
                         border: 'none',
                         borderRadius: '8px',
@@ -240,10 +284,13 @@ const Dashboard = () => {
                         outerRadius="90%"
                         paddingAngle={2}
                         dataKey="value"
+                        label={({ name }) => (
+                          <text fill={colors.primary} fontSize={14} fontWeight={600} textAnchor="middle">{name}</text>
+                        )}
                       >
                         {locationData.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
+                          <Cell
+                            key={`cell-${index}`}
                             fill={locationColors[index]}
                             stroke="transparent"
                           />
@@ -254,7 +301,7 @@ const Dashboard = () => {
                 </Box>
                 <Box sx={{ mt: 2 }}>
                   {locationData.map((item, index) => (
-                    <Box 
+                    <Box
                       key={item.name}
                       sx={{
                         display: 'flex',

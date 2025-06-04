@@ -50,7 +50,7 @@ to save more time and design efforts :)
 
 - Start the server: `npm run dev` or `yarn dev`
 
-- Views are on: `http://your-production-domain.com` or your configured backend URL
+- Views are on: `localhost:3000`
 
 ## File Structure
 

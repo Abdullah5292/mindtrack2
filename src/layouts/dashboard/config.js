@@ -6,6 +6,7 @@ import UserGroupIcon from "@heroicons/react/24/solid/UserGroupIcon";
 import UserCircleIcon from "@heroicons/react/24/solid/UserCircleIcon";
 import CogIcon from "@heroicons/react/24/solid/CogIcon";
 import ArrowLeftOnRectangleIcon from "@heroicons/react/24/solid/ArrowLeftOnRectangleIcon";
+import QuestionMarkCircleIcon from "@heroicons/react/24/solid/QuestionMarkCircleIcon";
 import { SvgIcon } from "@mui/material";
 
 export const items = [
@@ -50,6 +51,16 @@ export const items = [
     ),
   },
   {
+    title: "Questions",
+    path: "/questions",
+    requires: ["questions-view"],
+    icon: (
+      <SvgIcon fontSize="small">
+        <QuestionMarkCircleIcon />
+      </SvgIcon>
+    ),
+  },
+  {
     title: "Roles",
     path: "/roles",
     requires: ["role-view"],
@@ -62,6 +73,16 @@ export const items = [
   {
     title: "Players",
     path: "/players",
+    requires: [],
+    icon: (
+      <SvgIcon fontSize="small">
+        <UserCircleIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Dummy Players",
+    path: "/dummy-players",
     requires: [],
     icon: (
       <SvgIcon fontSize="small">
