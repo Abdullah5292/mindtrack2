@@ -81,8 +81,8 @@ export const items = [
     ),
   },
   {
-    title: "Dummy Players",
-    path: "/dummy-players",
+    title: "Players 2",
+    path: "/players2",
     requires: [],
     icon: (
       <SvgIcon fontSize="small">

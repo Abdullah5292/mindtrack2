@@ -126,6 +126,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [questionCount, setQuestionCount] = useState(null);
   const [gameCount, setGameCount] = useState(null);
+  const [playerCount, setPlayerCount] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -160,8 +161,24 @@ const Dashboard = () => {
         setGameCount(0);
       }
     };
+    // Fetch player count
+    const fetchPlayers = async () => {
+      try {
+        const res = await authenticatedAxios.get("/players/");
+        if (res.data && Array.isArray(res.data.data)) {
+          setPlayerCount(res.data.data.length);
+        } else if (res.data && Array.isArray(res.data)) {
+          setPlayerCount(res.data.length);
+        } else {
+          setPlayerCount(0);
+        }
+      } catch (e) {
+        setPlayerCount(0);
+      }
+    };
     fetchQuestions();
     fetchGames();
+    fetchPlayers();
     return () => clearTimeout(timer);
   }, []);
 
@@ -185,9 +202,11 @@ const Dashboard = () => {
         <Grid item xs={12} md={4}>
           <StatCard
             title="PLAYERS"
-            value="6"
+            value={playerCount === null ? <CircularProgress size={24} sx={{ color: colors.primary }} /> : playerCount}
             icon={<People sx={{ color: '#fff', fontSize: 28 }} />}
             iconBg={colors.primary}
+            onArrowClick={() => router.push('/players')}
+            arrowEnabled={true}
           />
         </Grid>
         <Grid item xs={12} md={4}>
@@ -284,9 +303,28 @@ const Dashboard = () => {
                         outerRadius="90%"
                         paddingAngle={2}
                         dataKey="value"
-                        label={({ name }) => (
-                          <text fill={colors.primary} fontSize={14} fontWeight={600} textAnchor="middle">{name}</text>
-                        )}
+                        labelLine={false}
+                        label={({ name, cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+                          // Calculate label position
+                          const RADIAN = Math.PI / 180;
+                          const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor={x > cx ? 'start' : 'end'}
+                              dominantBaseline="central"
+                              fontSize={14}
+                              fontWeight={600}
+                              style={{ pointerEvents: 'none' }}
+                            >
+                              {name}
+                            </text>
+                          );
+                        }}
                       >
                         {locationData.map((entry, index) => (
                           <Cell
