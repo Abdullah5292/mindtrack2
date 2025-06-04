@@ -185,7 +185,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={4}>
           <StatCard
             title="PLAYERS"
-            value="941,000"
+            value="6"
             icon={<People sx={{ color: '#fff', fontSize: 28 }} />}
             iconBg={colors.primary}
           />
